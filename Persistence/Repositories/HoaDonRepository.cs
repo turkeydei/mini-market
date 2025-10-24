@@ -6,9 +6,9 @@ namespace Persistence.Repositories
 {
     public class HoaDonRepository : IHoaDonService
     {
-        private readonly AppDbContext _context;
+        private readonly MiniMarketDbContext _context;
 
-        public HoaDonRepository(AppDbContext context)
+        public HoaDonRepository(MiniMarketDbContext context)
         {
             _context = context;
         }

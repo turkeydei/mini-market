@@ -6,9 +6,9 @@ namespace Persistence.Repositories
 {
     public class UserRepository : IUserService
     {
-        private readonly AppDbContext _context;
+        private readonly MiniMarketDbContext _context;
 
-        public UserRepository(AppDbContext context)
+        public UserRepository(MiniMarketDbContext context)
         {
             _context = context;
         }

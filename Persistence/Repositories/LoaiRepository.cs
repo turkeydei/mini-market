@@ -1,4 +1,5 @@
 ﻿
+using Application.Features.Interface;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,9 +7,9 @@ namespace Persistence.Repositories
 {
     public class LoaiRepository : ILoaiService
     {
-        private readonly AppDbContext _context;
+        private readonly MiniMarketDbContext _context;
 
-        public LoaiRepository(AppDbContext context)
+        public LoaiRepository(MiniMarketDbContext context)
         {
             _context = context;
         }

@@ -6,9 +6,9 @@ namespace Persistence.Repositories
 {
     public class HangHoaRepository : IHangHoaService
     {
-        private readonly AppDbContext _context;
+        private readonly MiniMarketDbContext _context;
 
-        public HangHoaRepository(AppDbContext context)
+        public HangHoaRepository(MiniMarketDbContext context)
         {
             _context = context;
         }

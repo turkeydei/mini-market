@@ -6,9 +6,9 @@ namespace Persistence.Repositories
 {
     public class TrangThaiRepository : ITrangThaiService
     {
-        private readonly AppDbContext _context;
+        private readonly MiniMarketDbContext _context;
 
-        public TrangThaiRepository(AppDbContext context)
+        public TrangThaiRepository(MiniMarketDbContext context)
         {
             _context = context;
         }
