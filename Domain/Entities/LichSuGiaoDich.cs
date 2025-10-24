@@ -12,18 +12,25 @@ namespace Domain.Entities
         public int MaGiaoDich { get; set; }
 
         [Required]
-        public int MaUser { get; set; }  // Sử dụng MaUser thay cho MaKH
-        public User? User { get; set; }  // Điều hướng tới User thay cho KhachHang
-
-        [Required]
         public int MaHD { get; set; }
-        public HoaDon? HoaDon { get; set; }
+        public HoaDon HoaDon { get; set; } = null!;
 
-        [Required]
-        [Display(Name = "Ngày Giao Dịch")]
-        public DateTime NgayGiaoDich { get; set; }
+        [Required, StringLength(20)]
+        public string Provider { get; set; } = "VNPAY";
 
-        [Required]
-        public float TongTien { get; set; }
+        [Required, Column(TypeName = "decimal(18,2)")]
+        public decimal SoTien { get; set; }
+
+        [Required, StringLength(20)]
+        public string TrangThai { get; set; } = "Pending"; // Pending, Success, Failed
+
+        [StringLength(100)]
+        public string? MaGiaoDichVNPAY { get; set; } // Từ VNPAY trả về (vnp_TxnRef)
+
+        [StringLength(255)]
+        public string? MoTa { get; set; }
+
+        public DateTime NgayTao { get; set; } = DateTime.UtcNow;
+        public DateTime? NgayCapNhat { get; set; }
     }
 }

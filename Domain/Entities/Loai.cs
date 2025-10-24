@@ -14,16 +14,14 @@ namespace Domain.Entities
         [Key]
         public int MaLoai { get; set; }
 
-        [Required]
-        [StringLength(255)]
+        [Required, StringLength(255)]
         [Display(Name = "Tên Loại")]
-        public  string? TenLoai { get; set; }
-
+        public string TenLoai { get; set; } = null!;
 
         [Display(Name = "Mô Tả")]
-        public  string? MoTa { get; set; }
+        public string? MoTa { get; set; }
 
-        // Navigation Properties
-        public ICollection<HangHoa>? HangHoas { get; set; }
+        // Navigation
+        public ICollection<HangHoa> HangHoas { get; set; } = new List<HangHoa>();
     }
 }

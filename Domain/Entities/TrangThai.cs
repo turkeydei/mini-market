@@ -14,16 +14,15 @@ namespace Domain.Entities
         [Key]
         public int MaTrangThai { get; set; }
 
-        [Required]
-        [StringLength(255)]
+        [Required, StringLength(255)]
         [Display(Name = "Tên Trạng Thái")]
-        public string TenTrangThai { get; set; }
+        public string TenTrangThai { get; set; } = null!;
 
         [StringLength(255)]
         [Display(Name = "Mô Tả")]
         public string? MoTa { get; set; }
 
-        // Navigation Propertiesa
-        public ICollection<HoaDon>? HoaDons { get; set; }
+        // Navigation
+        public ICollection<HoaDon> HoaDons { get; set; } = new List<HoaDon>();
     }
 }

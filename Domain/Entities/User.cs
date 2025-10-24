@@ -11,38 +11,33 @@ public class User
     [Key]
     public int MaUser { get; set; }
 
-    [Required]
-    [StringLength(255)]
+    [Required, StringLength(255)]
     [Display(Name = "Họ Tên")]
-    public string? HoTen { get; set; }
+    public string HoTen { get; set; } = null!;
 
-    [Required]
-    [StringLength(255)]
-    public string? Email { get; set; }
+    [Required, StringLength(255)]
+    [EmailAddress]
+    public string Email { get; set; } = null!;
 
-    [Required]
-    [StringLength(255)]
-    public string? MatKhau { get; set; }
+    // Lưu HASH mật khẩu tại đây (đừng lưu plain text)
+    [Required, StringLength(255)]
+    [Display(Name = "Mật Khẩu (Hash)")]
+    public string MatKhau { get; set; } = null!;
 
-    [StringLength(50)]
+    [StringLength(20)]
     [Display(Name = "Điện Thoại")]
     public string? DienThoai { get; set; }
 
-    // Phân biệt vai trò giữa Khách hàng và Nhân viên (0: Khách hàng, 1: Nhân viên)
-    [Required]
-    public int VaiTro { get; set; }
+    // 0: Khách hàng (mặc định), 1: Nhân viên (nếu sau này cần)
+    public int VaiTro { get; set; } = 0;
 
-    // Các thuộc tính dành riêng cho Khách hàng
-    public int? GioiTinh { get; set; } // Sử dụng kiểu int để lưu giá trị 0 hoặc 1
-
-    [Display(Name = "Ngày Sinh")]
+    public int? GioiTinh { get; set; } // 0/1 nếu muốn
     public DateTime? NgaySinh { get; set; }
 
     [StringLength(255)]
     [Display(Name = "Địa Chỉ")]
     public string? DiaChi { get; set; }
 
-    // Navigation Properties cho Khách hàng và Nhân viên
-    public ICollection<HoaDon>? HoaDons { get; set; }
-    public ICollection<PhanQuyen>? PhanQuyens { get; set; }
+    // Navigation
+    public ICollection<HoaDon> HoaDons { get; set; } = new List<HoaDon>();
 }

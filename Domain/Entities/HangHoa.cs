@@ -14,34 +14,33 @@ namespace Domain.Entities
         [Key]
         public int MaHH { get; set; }
 
-        [Required]
-        [StringLength(255)]
+        [Required, StringLength(255)]
         [Display(Name = "Tên Hàng Hóa")]
-        public string? TenHH { get; set; }
+        public string TenHH { get; set; } = null!;
 
+        [Required]
         public int MaLoai { get; set; }
-        public Loai? Loai { get; set; }
+        public Loai Loai { get; set; } = null!;
 
-        public float? DonGia { get; set; }
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal DonGia { get; set; }
 
         [StringLength(255)]
-        [Display(Name = "Hình Ảnh")]
+        [Display(Name = "Hình Ảnh (relative path)")]
         public string? Hinh { get; set; }
 
-        [Required]
         [Display(Name = "Ngày Sản Xuất")]
-        public DateTime NgaySX { get; set; }
+        public DateTime? NgaySX { get; set; }  // để optional cho linh hoạt
 
-        [Required]
-        public float GiamGia { get; set; }
+        [Column(TypeName = "decimal(5,2)")]
+        public decimal GiamGia { get; set; } = 0m;
 
-        [Required]
-        public int SoLanXem { get; set; }
+        public int SoLanXem { get; set; } = 0;
 
         public string? MoTa { get; set; }
 
-        // Navigation Properties
-        public ICollection<ChiTietHD>? ChiTietHDs { get; set; }
-        public ICollection<TonKho>? TonKhos { get; set; }
+        // Navigation
+        public ICollection<ChiTietHD> ChiTietHDs { get; set; } = new List<ChiTietHD>();
     }
 }
