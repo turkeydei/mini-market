@@ -1,0 +1,73 @@
+@model Domain.Entities.HoaDon
+@{
+    ViewData["Title"] = "Chi Tiết Đơn Hàng";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4>Đơn Hàng #@Model.MaHD</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Thông Tin Khách Hàng</h6>
+                        <p><strong>Họ Tên:</strong> @Model.User?.HoTen</p>
+                        <p><strong>Email:</strong> @Model.User?.Email</p>
+                        <p><strong>Số Điện Thoại:</strong> @Model.SoDienThoai</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Thông Tin Giao Hàng</h6>
+                        <p><strong>Địa Chỉ:</strong> @Model.DiaChiGiao</p>
+                        <p><strong>Ngày Đặt:</strong> @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")</p>
+                        @if (Model.NgayCan.HasValue)
+                        {
+                            <p><strong>Ngày Cần:</strong> @Model.NgayCan.Value.ToString("dd/MM/yyyy")</p>
+                        }
+                        @if (Model.NgayGiao.HasValue)
+                        {
+                            <p><strong>Ngày Giao:</strong> @Model.NgayGiao.Value.ToString("dd/MM/yyyy HH:mm")</p>
+                        }
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h6>Trạng Thái Đơn Hàng</h6>
+                <span class="badge bg-primary fs-6">@Model.TrangThai?.TenTrangThai</span>
+                
+                @if (!string.IsNullOrEmpty(Model.GhiChu))
+                {
+                    <div class="mt-3">
+                        <h6>Ghi Chú</h6>
+                        <p>@Model.GhiChu</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6>Tổng Kết</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <span>Phí Vận Chuyển:</span>
+                    <span>@Model.PhiVanChuyen.ToString("N0") VNĐ</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between fw-bold">
+                    <span>Tổng Cộng:</span>
+                    <span>@Model.PhiVanChuyen.ToString("N0") VNĐ</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-3">
+            <a asp-action="Index" class="btn btn-outline-secondary w-100">Quay Lại</a>
+        </div>
+    </div>
+</div>

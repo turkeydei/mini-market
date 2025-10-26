@@ -1,0 +1,63 @@
+@model Domain.Entities.HangHoa
+@{
+    ViewData["Title"] = "Chi Tiết Sản Phẩm";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        @if (!string.IsNullOrEmpty(Model.Hinh))
+        {
+            <img src="@Model.Hinh" class="img-fluid" alt="@Model.TenHH" />
+        }
+        else
+        {
+            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
+                <span class="text-muted">Không có hình ảnh</span>
+            </div>
+        }
+    </div>
+    <div class="col-md-6">
+        <h2>@Model.TenHH</h2>
+        <p class="text-muted">Loại: @Model.Loai?.TenLoai</p>
+        
+        <div class="mb-3">
+            @if (Model.GiamGia > 0)
+            {
+                <span class="text-decoration-line-through text-muted h5">@Model.DonGia.ToString("N0") VNĐ</span>
+                <br>
+                <span class="text-danger h4 fw-bold">@((Model.DonGia * (1 - Model.GiamGia / 100)).ToString("N0")) VNĐ</span>
+                <span class="badge bg-danger ms-2">-@Model.GiamGia%</span>
+            }
+            else
+            {
+                <span class="h4 fw-bold text-primary">@Model.DonGia.ToString("N0") VNĐ</span>
+            }
+        </div>
+        
+        <div class="mb-3">
+            <strong>Mô tả:</strong>
+            <p>@Model.MoTa</p>
+        </div>
+        
+        <div class="mb-3">
+            <strong>Ngày sản xuất:</strong>
+            <p>@Model.NgaySX?.ToString("dd/MM/yyyy")</p>
+        </div>
+        
+        <div class="mb-3">
+            <strong>Lượt xem:</strong>
+            <span class="badge bg-info">@Model.SoLanXem</span>
+        </div>
+        
+        <div class="d-grid gap-2 d-md-block">
+            <a asp-action="Index" class="btn btn-outline-secondary">Quay Lại</a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Edit" asp-route-id="@Model.MaHH" class="btn btn-warning">Sửa</a>
+                <form asp-action="Delete" asp-route-id="@Model.MaHH" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

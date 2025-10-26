@@ -1,10 +1,10 @@
-﻿using Application.Features.Interface;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Application.Features.Interface.IRepositories;
 
 namespace Persistence.Repositories
 {
-    public class HoaDonRepository : IHoaDonService
+    public class HoaDonRepository : IHoaDonRepository
     {
         private readonly MiniMarketDbContext _context;
 
@@ -13,46 +13,80 @@ namespace Persistence.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<HoaDon>> GetAll()
+        public async Task<IEnumerable<HoaDon>> GetAllAsync()
         {
             return await _context.HoaDons
-                .Include(h => h.User)
-                .Include(h => h.TrangThai)
-                .Include(h => h.ChiTietHDs)
-                .ThenInclude(ct => ct.HangHoa)
+                .Include(x => x.User)
+                .Include(x => x.TrangThai)
+                .Include(x => x.ChiTietHDs)
                 .ToListAsync();
         }
 
-        public async Task<HoaDon?> GetById(int id)
+        public async Task<HoaDon?> GetByIdAsync(int id)
         {
             return await _context.HoaDons
-                .Include(h => h.User)
-                .Include(h => h.TrangThai)
-                .Include(h => h.ChiTietHDs)
-                .ThenInclude(ct => ct.HangHoa)
-                .FirstOrDefaultAsync(h => h.MaHD == id);
+                .Include(x => x.User)
+                .Include(x => x.TrangThai)
+                .FirstOrDefaultAsync(x => x.MaHD == id);
         }
 
-        public async Task Add(HoaDon hd)
+        public async Task<HoaDon?> GetByIdWithDetailsAsync(int id)
         {
-            await _context.HoaDons.AddAsync(hd);
+            return await _context.HoaDons
+                .Include(x => x.User)
+                .Include(x => x.TrangThai)
+                .Include(x => x.ChiTietHDs)
+                    .ThenInclude(ct => ct.HangHoa)
+                .FirstOrDefaultAsync(x => x.MaHD == id);
+        }
+
+        public async Task<IEnumerable<HoaDon>> GetByUserIdAsync(int maUser)
+        {
+            return await _context.HoaDons
+                .Include(x => x.User)
+                .Include(x => x.TrangThai)
+                .Include(x => x.ChiTietHDs)
+                .Where(x => x.MaUser == maUser)
+                .OrderByDescending(x => x.NgayDat)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<HoaDon>> GetByStatusAsync(int maTrangThai)
+        {
+            return await _context.HoaDons
+                .Include(x => x.User)
+                .Include(x => x.TrangThai)
+                .Include(x => x.ChiTietHDs)
+                .Where(x => x.MaTrangThai == maTrangThai)
+                .OrderByDescending(x => x.NgayDat)
+                .ToListAsync();
+        }
+
+        public async Task AddAsync(HoaDon hoaDon)
+        {
+            await _context.HoaDons.AddAsync(hoaDon);
             await _context.SaveChangesAsync();
         }
 
-        public async Task Update(HoaDon hd)
+        public async Task UpdateAsync(HoaDon hoaDon)
         {
-            _context.HoaDons.Update(hd);
+            _context.HoaDons.Update(hoaDon);
             await _context.SaveChangesAsync();
         }
 
-        public async Task Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var hd = await _context.HoaDons.FindAsync(id);
-            if (hd != null)
+            var hoaDon = await _context.HoaDons.FindAsync(id);
+            if (hoaDon != null)
             {
-                _context.HoaDons.Remove(hd);
+                _context.HoaDons.Remove(hoaDon);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<bool> ExistsAsync(int id)
+        {
+            return await _context.HoaDons.AnyAsync(x => x.MaHD == id);
         }
     }
 }
