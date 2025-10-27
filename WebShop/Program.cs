@@ -10,6 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Add Session
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Add DbContext
 builder.Services.AddDbContext<MiniMarketDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -18,12 +27,14 @@ builder.Services.AddDbContext<MiniMarketDbContext>(options =>
 builder.Services.AddScoped<Application.Features.Interface.IRepositories.IHangHoaRepository, HangHoaRepository>();
 builder.Services.AddScoped<Application.Features.Interface.IRepositories.IUserRepository, UserRepository>();
 builder.Services.AddScoped<Application.Features.Interface.IRepositories.IHoaDonRepository, HoaDonRepository>();
+builder.Services.AddScoped<Application.Features.Interface.ILichSuGiaoDich, LichSuGiaoDichRepository>();
 
 // Register Services
 builder.Services.AddScoped<IHangHoaService, HangHoaService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IHoaDonService, HoaDonService>();
 builder.Services.AddScoped<IAuthService, AuthenticationService>();
+builder.Services.AddScoped<ITransactionHistoryService, TransactionHistoryService>();
 
 // Add HttpContextAccessor for AuthenticationService
 builder.Services.AddHttpContextAccessor();
@@ -56,6 +67,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Add Session middleware - must be before UseAuthentication
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();

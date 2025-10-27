@@ -48,6 +48,14 @@ public class MiniMarketDbContext: DbContext
             .OnDelete(DeleteBehavior.Restrict); // Adjust DeleteBehavior as needed
 
        
+        // Define relationship between HoaDon and User
+        modelBuilder
+            .Entity<HoaDon>()
+            .HasOne(hd => hd.User)
+            .WithMany(u => u.HoaDons)
+            .HasForeignKey(hd => hd.MaUser)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // Define relationship between HoaDon and TrangThai
         modelBuilder
             .Entity<HoaDon>()

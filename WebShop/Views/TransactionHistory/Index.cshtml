@@ -1,0 +1,93 @@
+@model IEnumerable<Domain.Entities.LichSuGiaoDich>
+@{
+    ViewData["Title"] = "Lịch Sử Giao Dịch";
+}
+
+<div class="container">
+    <h2 class="mb-4">Lịch Sử Giao Dịch</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Mã giao dịch</th>
+                        <th>Mã đơn hàng</th>
+                        <th>Ngày giao dịch</th>
+                        <th>Nhà cung cấp</th>
+                        <th>Số tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Mô tả</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var transaction in Model.OrderByDescending(t => t.NgayTao))
+                    {
+                        <tr>
+                            <td>@transaction.MaGiaoDich</td>
+                            <td>
+                                <a asp-action="Details" asp-controller="HoaDon" asp-route-id="@transaction.MaHD">
+                                    #@transaction.MaHD
+                                </a>
+                            </td>
+                            <td>@transaction.NgayTao.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                <span class="badge bg-info">@transaction.Provider</span>
+                            </td>
+                            <td class="fw-bold text-primary">
+                                @transaction.SoTien.ToString("N0") VNĐ
+                            </td>
+                            <td>
+                                @if (transaction.TrangThai == "Success")
+                                {
+                                    <span class="badge bg-success">@transaction.TrangThai</span>
+                                }
+                                else if (transaction.TrangThai == "Failed")
+                                {
+                                    <span class="badge bg-danger">@transaction.TrangThai</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">@transaction.TrangThai</span>
+                                }
+                            </td>
+                            <td>@transaction.MoTa</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@transaction.MaGiaoDich" class="btn btn-sm btn-outline-primary">
+                                    Chi tiết
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="text-muted">
+                        Tổng số giao dịch: <strong>@Model.Count()</strong>
+                    </p>
+                    <p class="text-muted">
+                        Tổng giá trị: <strong class="text-danger">@Model.Sum(t => t.SoTien).ToString("N0") VNĐ</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+            <h4>Chưa có giao dịch nào</h4>
+            <p class="text-muted">Bạn chưa thực hiện giao dịch nào trên hệ thống</p>
+            <a asp-action="Index" asp-controller="HangHoa" class="btn btn-primary">
+                <i class="fas fa-shopping-bag"></i> Đi mua sắm ngay
+            </a>
+        </div>
+    }
+</div>
+

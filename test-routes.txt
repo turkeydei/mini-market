@@ -1,0 +1,17 @@
+Kiểm tra các routes hoạt động:
+
+1. Home: http://localhost:5073/
+2. Sản phẩm: http://localhost:5073/HangHoa
+3. Đăng nhập: http://localhost:5073/Authentication/Login
+4. Đăng ký: http://localhost:5073/Authentication/Register
+5. Giỏ hàng: http://localhost:5073/Checkout
+6. Lịch sử: http://localhost:5073/TransactionHistory
+
+HÃY BẮT ĐẦU TỪ:
+→ Mở: http://localhost:5073
+→ Click "Đăng Ký" để tạo tài khoản
+→ Đăng nhập
+→ Click "Sản Phẩm"
+→ Thêm sản phẩm vào giỏ
+→ Thanh toán
+

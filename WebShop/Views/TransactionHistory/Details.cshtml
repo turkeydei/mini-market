@@ -1,0 +1,120 @@
+@model Domain.Entities.LichSuGiaoDich
+@{
+    ViewData["Title"] = "Chi Tiết Giao Dịch";
+}
+
+<div class="container">
+    <h2 class="mb-4">Chi Tiết Giao Dịch</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Thông tin giao dịch</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Mã giao dịch:</dt>
+                        <dd class="col-sm-8">@Model.MaGiaoDich</dd>
+
+                        <dt class="col-sm-4">Mã đơn hàng:</dt>
+                        <dd class="col-sm-8">
+                            <a asp-action="Details" asp-controller="HoaDon" asp-route-id="@Model.MaHD">
+                                #@Model.MaHD
+                            </a>
+                        </dd>
+
+                        <dt class="col-sm-4">Nhà cung cấp:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-info">@Model.Provider</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Số tiền:</dt>
+                        <dd class="col-sm-8">
+                            <span class="h5 text-primary fw-bold">@Model.SoTien.ToString("N0") VNĐ</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Trạng thái:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.TrangThai == "Success")
+                            {
+                                <span class="badge bg-success">Thành công</span>
+                            }
+                            else if (Model.TrangThai == "Failed")
+                            {
+                                <span class="badge bg-danger">Thất bại</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning">Đang xử lý</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Mã giao dịch VNPAY:</dt>
+                        <dd class="col-sm-8">@(Model.MaGiaoDichVNPAY ?? "N/A")</dd>
+
+                        <dt class="col-sm-4">Mô tả:</dt>
+                        <dd class="col-sm-8">@Model.MoTa</dd>
+
+                        <dt class="col-sm-4">Ngày tạo:</dt>
+                        <dd class="col-sm-8">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm:ss")</dd>
+
+                        @if (Model.NgayCapNhat.HasValue)
+                        {
+                            <dt class="col-sm-4">Ngày cập nhật:</dt>
+                            <dd class="col-sm-8">@Model.NgayCapNhat.Value.ToString("dd/MM/yyyy HH:mm:ss")</dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+
+            @if (Model.HoaDon != null)
+            {
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h4>Thông tin đơn hàng liên quan</h4>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-4">Ngày đặt:</dt>
+                            <dd class="col-sm-8">@Model.HoaDon.NgayDat.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                            <dt class="col-sm-4">Địa chỉ giao hàng:</dt>
+                            <dd class="col-sm-8">@Model.HoaDon.DiaChiGiao</dd>
+
+                            @if (!string.IsNullOrEmpty(Model.HoaDon.SoDienThoai))
+                            {
+                                <dt class="col-sm-4">Số điện thoại:</dt>
+                                <dd class="col-sm-8">@Model.HoaDon.SoDienThoai</dd>
+                            }
+
+                            <dt class="col-sm-4">Phí vận chuyển:</dt>
+                            <dd class="col-sm-8">@Model.HoaDon.PhiVanChuyen.ToString("N0") VNĐ</dd>
+
+                            @if (!string.IsNullOrEmpty(Model.HoaDon.GhiChu))
+                            {
+                                <dt class="col-sm-4">Ghi chú:</dt>
+                                <dd class="col-sm-8">@Model.HoaDon.GhiChu</dd>
+                            }
+                        </dl>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Hành động</h5>
+                    <a asp-action="Details" asp-controller="HoaDon" asp-route-id="@Model.MaHD" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-file-invoice"></i> Xem đơn hàng
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

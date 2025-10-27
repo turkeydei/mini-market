@@ -1,0 +1,65 @@
+===========================================
+      HƯỚNG DẪN CHẠY DEMO LOCALHOST
+===========================================
+
+✅ ỨNG DỤNG ĐANG CHẠY TẠI: 
+   http://localhost:5073
+
+
+===========================================
+CÁC BƯỚC TEST:
+===========================================
+
+1. MỞ BROWSER VÀ TRUY CẬP:
+   → http://localhost:5073
+
+2. ĐĂNG KÝ/ĐĂNG NHẬP:
+   - Click "Đăng Ký" hoặc "Đăng Nhập"
+   - Tạo tài khoản nếu chưa có
+
+3. XEM SẢN PHẨM:
+   - Click menu "Sản Phẩm"
+   - Chọn một sản phẩm bất kỳ
+
+4. THÊM VÀO GIỎ HÀNG:
+   - Tại trang chi tiết sản phẩm
+   - Chọn số lượng
+   - Click "Thêm vào giỏ hàng"
+
+5. THANH TOÁN:
+   - Click menu "Giỏ Hàng"
+   - Điền địa chỉ và số điện thoại
+   - Click "Thanh Toán"
+
+6. XEM LỊCH SỬ GIAO DỊCH:
+   - Click menu "Lịch Sử GD"
+   - Xem các giao dịch đã thực hiện
+
+===========================================
+NẾU CÓ LỖI:
+===========================================
+
+Lỗi "Can't connect":
+→ Ứng dụng không chạy. Chạy lại: dotnet run
+
+Lỗi "Not Found (404)":
+→ Kiểm tra URL có đúng không
+
+Lỗi "Session expired":
+→ Refresh trang hoặc đăng nhập lại
+
+Lỗi Database:
+→ Chạy: dotnet ef database update
+
+===========================================
+CÁC URL QUAN TRỌNG:
+===========================================
+
+- Trang chủ: http://localhost:5073
+- Sản phẩm: http://localhost:5073/HangHoa
+- Giỏ hàng: http://localhost:5073/Checkout
+- Đăng nhập: http://localhost:5073/Authentication/Login
+- Lịch sử: http://localhost:5073/TransactionHistory
+
+===========================================
+
