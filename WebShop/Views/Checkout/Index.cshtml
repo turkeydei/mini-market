@@ -1,0 +1,210 @@
+@{
+    ViewData["Title"] = "Checkout - Thanh toán";
+}
+
+<div class="container mt-4">
+    <h2>Thanh Toán Đơn Hàng</h2>
+    
+    <div class="row">
+        <!-- Thông tin giao hàng -->
+        <div class="col-md-7">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Thông Tin Giao Hàng</h5>
+                </div>
+                <div class="card-body">
+                    <form id="checkoutForm">
+                        <div class="mb-3">
+                            <label for="hoTen" class="form-label">Họ và Tên</label>
+                            <input type="text" class="form-control" id="hoTen" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="soDienThoai" class="form-label">Số Điện Thoại</label>
+                            <input type="tel" class="form-control" id="soDienThoai" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="diaChiGiao" class="form-label">Địa Chỉ Giao Hàng</label>
+                            <textarea class="form-control" id="diaChiGiao" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="ghiChu" class="form-label">Ghi Chú</label>
+                            <textarea class="form-control" id="ghiChu" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Phương thức thanh toán -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Phương Thức Thanh Toán</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="phuongThucTT" id="cod" value="COD" checked>
+                        <label class="form-check-label" for="cod">
+                            <strong>Thanh toán khi nhận hàng (COD)</strong>
+                            <br><small class="text-muted">Thanh toán bằng tiền mặt khi nhận hàng</small>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="phuongThucTT" id="bankTransfer" value="Bank Transfer">
+                        <label class="form-check-label" for="bankTransfer">
+                            <strong>Chuyển khoản ngân hàng</strong>
+                            <br><small class="text-muted">Chuyển khoản qua ngân hàng</small>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="phuongThucTT" id="ewallet" value="E-Wallet">
+                        <label class="form-check-label" for="ewallet">
+                            <strong>Ví điện tử</strong>
+                            <br><small class="text-muted">Thanh toán qua MoMo, ZaloPay, etc.</small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Thông tin đơn hàng -->
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Đơn Hàng Của Bạn</h5>
+                </div>
+                <div class="card-body">
+                    <div id="cartItems">
+                        <!-- Cart items will be populated here -->
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>iPhone 15 × 1</span>
+                            <span>25,000,000 đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Samsung Galaxy S24 × 1</span>
+                            <span>22,000,000 đ</span>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tạm tính:</span>
+                        <span id="subTotal">47,000,000 đ</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Phí vận chuyển:</span>
+                        <span id="shippingFee">30,000 đ</span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Tổng cộng:</strong>
+                        <strong class="text-danger" id="totalAmount">47,030,000 đ</strong>
+                    </div>
+                    
+                    <button type="button" class="btn btn-primary w-100" id="btnCheckout">
+                        Đặt Hàng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Lấy giỏ hàng từ localStorage hoặc session
+            let cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+            
+            // Render cart items
+            function renderCart() {
+                let subTotal = 0;
+                let html = '';
+                
+                cartItems.forEach(item => {
+                    let itemTotal = item.donGia * item.soLuong;
+                    subTotal += itemTotal;
+                    
+                    html += `
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>${item.tenHH} × ${item.soLuong}</span>
+                            <span>${formatCurrency(itemTotal)}</span>
+                        </div>
+                    `;
+                });
+                
+                $('#cartItems').html(html);
+                
+                let shippingFee = 30000;
+                let total = subTotal + shippingFee;
+                
+                $('#subTotal').text(formatCurrency(subTotal));
+                $('#shippingFee').text(formatCurrency(shippingFee));
+                $('#totalAmount').text(formatCurrency(total));
+            }
+            
+            // Format currency
+            function formatCurrency(amount) {
+                return new Intl.NumberFormat('vi-VN', { 
+                    style: 'currency', 
+                    currency: 'VND' 
+                }).format(amount);
+            }
+            
+            // Xử lý đặt hàng
+            $('#btnCheckout').click(function() {
+                if (!$('#checkoutForm')[0].checkValidity()) {
+                    $('#checkoutForm')[0].reportValidity();
+                    return;
+                }
+                
+                // Giả sử MaUser = 1 (trong thực tế lấy từ session/authentication)
+                let orderData = {
+                    maUser: 1,
+                    diaChiGiao: $('#diaChiGiao').val(),
+                    soDienThoai: $('#soDienThoai').val(),
+                    phiVanChuyen: 30000,
+                    ghiChu: $('#ghiChu').val(),
+                    phuongThucTT: $('input[name="phuongThucTT"]:checked').val(),
+                    items: cartItems.map(item => ({
+                        maHH: item.maHH,
+                        soLuong: item.soLuong
+                    }))
+                };
+                
+                // Gửi request tạo đơn hàng
+                $.ajax({
+                    url: '/Checkout/CreateOrder',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(orderData),
+                    success: function(response) {
+                        if (response.success) {
+                            // Xóa giỏ hàng
+                            localStorage.removeItem('cart');
+                            
+                            // Chuyển đến trang thành công
+                            window.location.href = response.redirectUrl;
+                        } else {
+                            alert('Đặt hàng thất bại: ' + response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Có lỗi xảy ra: ' + xhr.responseText);
+                    }
+                });
+            });
+            
+            // Render cart khi load trang
+            renderCart();
+        });
+    </script>
+}
+

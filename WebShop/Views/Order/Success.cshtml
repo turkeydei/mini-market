@@ -1,0 +1,197 @@
+@model Domain.Entities.HoaDon
+@{
+    ViewData["Title"] = "Đặt hàng thành công";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Success Message -->
+            <div class="text-center mb-4">
+                <div class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                </div>
+                <h2 class="fw-bold text-success">Đặt hàng thành công! 🎉</h2>
+                <p class="text-muted">Cảm ơn bạn đã mua hàng tại Mini Market</p>
+            </div>
+
+            <!-- Order Info Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-receipt"></i> Thông tin đơn hàng
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Mã đơn hàng:</strong></p>
+                            <p class="text-primary fs-4">#@Model.MaHD</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Ngày đặt:</strong></p>
+                            <p>@Model.NgayDat.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Trạng thái:</strong></p>
+                            <span class="badge bg-warning">@Model.Status</span>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Thanh toán:</strong></p>
+                            <span class="badge bg-@(Model.PaymentTransaction?.Status == "Completed" ? "success" : "warning")">
+                                @Model.PaymentTransaction?.Status
+                            </span>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Người nhận:</strong></p>
+                            <p>@Model.User?.HoTen</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Số điện thoại:</strong></p>
+                            <p>@Model.SoDienThoai</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="mb-1"><strong>Địa chỉ giao hàng:</strong></p>
+                        <p class="text-muted">@Model.DiaChiGiao</p>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.GhiChu))
+                    {
+                        <div class="mb-3">
+                            <p class="mb-1"><strong>Ghi chú:</strong></p>
+                            <p class="text-muted">@Model.GhiChu</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bag-check"></i> Chi tiết sản phẩm
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-end">Đơn giá</th>
+                                    <th class="text-end">Giảm giá</th>
+                                    <th class="text-end">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ChiTietHDs != null)
+                                {
+                                    foreach (var item in Model.ChiTietHDs)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@item.HangHoa?.TenHH</strong>
+                                            </td>
+                                            <td class="text-center">@item.SoLuong</td>
+                                            <td class="text-end">@item.DonGia.ToString("#,##0") đ</td>
+                                            <td class="text-end text-danger">-@item.GiamGia.ToString("#,##0") đ</td>
+                                            <td class="text-end"><strong>@item.ThanhTien.ToString("#,##0") đ</strong></td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Tạm tính:</strong></td>
+                                    <td class="text-end">
+                                        @((Model.TongTien - Model.PhiVanChuyen).ToString("#,##0")) đ
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Phí vận chuyển:</strong></td>
+                                    <td class="text-end">@Model.PhiVanChuyen.ToString("#,##0") đ</td>
+                                </tr>
+                                <tr class="table-success">
+                                    <td colspan="4" class="text-end"><strong class="fs-5">Tổng cộng:</strong></td>
+                                    <td class="text-end"><strong class="fs-5 text-success">@Model.TongTien.ToString("#,##0") đ</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h6><i class="bi bi-credit-card"></i> Phương thức thanh toán</h6>
+                    <p class="mb-0">
+                        <span class="badge bg-info">@Model.PaymentTransaction?.PhuongThucTT</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a asp-controller="Order" asp-action="History" class="btn btn-outline-primary">
+                                <i class="bi bi-clock-history"></i> Xem lịch sử đơn hàng
+                            </a>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-house"></i> Tiếp tục mua sắm
+                            </a>
+                        </div>
+                        <div>
+                            <a asp-controller="Order" asp-action="Details" asp-route-id="@Model.MaHD" class="btn btn-primary">
+                                <i class="bi bi-eye"></i> Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="alert alert-info mt-4">
+                <h6><i class="bi bi-info-circle"></i> Bước tiếp theo:</h6>
+                <ul class="mb-0">
+                    <li>Chúng tôi sẽ xác nhận đơn hàng của bạn trong thời gian sớm nhất</li>
+                    <li>Bạn sẽ nhận được email xác nhận đơn hàng</li>
+                    <li>Theo dõi trạng thái đơn hàng tại mục "Đơn hàng của tôi"</li>
+                    @if (Model.PaymentTransaction?.PhuongThucTT == "COD")
+                    {
+                        <li>Thanh toán bằng tiền mặt khi nhận hàng</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-success {
+        color: #28a745 !important;
+    }
+    
+    .card {
+        border: none;
+    }
+    
+    .table td, .table th {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+</style>
+
