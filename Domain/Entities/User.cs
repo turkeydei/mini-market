@@ -28,21 +28,20 @@ public class User
     [Display(Name = "Điện Thoại")]
     public string? DienThoai { get; set; }
 
-    // Phân biệt vai trò giữa Khách hàng và Nhân viên (0: Khách hàng, 1: Nhân viên)
+    // Phân biệt vai trò: Customer, Admin, Staff
     [Required]
-    public int VaiTro { get; set; }
+    [StringLength(50)]
+    public string VaiTro { get; set; } = "Customer";
 
-    // Các thuộc tính dành riêng cho Khách hàng
-    public int? GioiTinh { get; set; } // Sử dụng kiểu int để lưu giá trị 0 hoặc 1
+    public int? GioiTinh { get; set; } // 0: Nam, 1: Nữ
 
     [Display(Name = "Ngày Sinh")]
     public DateTime? NgaySinh { get; set; }
 
-    [StringLength(255)]
+    [StringLength(500)]
     [Display(Name = "Địa Chỉ")]
     public string? DiaChi { get; set; }
 
-    // Navigation Properties cho Khách hàng và Nhân viên
+    // Navigation Properties
     public ICollection<HoaDon>? HoaDons { get; set; }
-    public ICollection<PhanQuyen>? PhanQuyens { get; set; }
 }

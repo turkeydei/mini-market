@@ -18,9 +18,8 @@ public class HoaDon
 
     [Required]
     [Display(Name = "Ngày Đặt")]
-    public DateTime NgayDat { get; set; }
+    public DateTime NgayDat { get; set; } = DateTime.Now;
 
-    public DateTime? NgayCan { get; set; }
     public DateTime? NgayGiao { get; set; }
 
     [Required]
@@ -28,17 +27,22 @@ public class HoaDon
     public string? DiaChiGiao { get; set; }
 
     [Required]
-    public float PhiVanChuyen { get; set; }
+    public decimal TongTien { get; set; }
 
     [Required]
-    public int MaTrangThai { get; set; }
+    public decimal PhiVanChuyen { get; set; }
 
-    public TrangThai? TrangThai { get; set; }
+    [Required]
+    [StringLength(50)]
+    [Display(Name = "Trạng Thái")]
+    public string Status { get; set; } = "Pending"; // Pending, Processing, Completed, Cancelled
 
     public string? GhiChu { get; set; }
 
+    [StringLength(50)]
     public string? SoDienThoai { get; set; }
 
     // Navigation Properties
     public ICollection<ChiTietHD>? ChiTietHDs { get; set; }
+    public PaymentTransaction? PaymentTransaction { get; set; }
 }
