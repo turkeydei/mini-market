@@ -41,40 +41,122 @@ Modern e-commerce web application built with **3-tier architecture**, **Reposito
 - [Docker Desktop](https://www.docker.com/products/docker-desktop) (for SQL Server)
 - Git
 
-### Setup & Run
+---
 
-```bash
-# 1. Clone repository
+## 💻 Setup for Windows Developers
+
+### 1️⃣ Install Prerequisites
+
+#### Install .NET 9.0 SDK
+1. Download from: https://dotnet.microsoft.com/download/dotnet/9.0
+2. Run installer `dotnet-sdk-9.0.xxx-win-x64.exe`
+3. Verify installation:
+```powershell
+dotnet --version
+# Should show: 9.0.x
+```
+
+#### Install Docker Desktop
+1. Download from: https://www.docker.com/products/docker-desktop/
+2. Install and restart Windows
+3. Start Docker Desktop
+4. Verify installation:
+```powershell
+docker --version
+# Should show: Docker version xx.x.x
+```
+
+#### Install Git (if not installed)
+1. Download from: https://git-scm.com/download/win
+2. Use default settings during installation
+
+#### Install EF Core Tools
+```powershell
+dotnet tool install --global dotnet-ef
+```
+
+### 2️⃣ Clone & Setup Project
+
+**Open PowerShell or Windows Terminal:**
+
+```powershell
+# Clone repository
 git clone https://github.com/turkeydei/mini-market.git
 cd mini-market
 
-# 2. Start SQL Server (Docker)
+# Run setup script (automated)
+.\setup.ps1
+```
+
+### 3️⃣ Start SQL Server (Docker)
+
+```powershell
+# Start SQL Server container
+docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Admin@123456" -p 1433:1433 --name sqlserver -d mcr.microsoft.com/mssql/server:2022-latest
+
+# Verify container is running
+docker ps
+```
+
+### 4️⃣ Apply Database Migrations
+
+```powershell
+# Navigate to WebShop project
+cd WebShop
+
+# Apply migrations
+dotnet ef database update
+
+# Verify database created successfully
+```
+
+### 5️⃣ Run Application
+
+```powershell
+# Run the application
+dotnet run --urls "http://localhost:5000"
+
+# Or use the run script
+cd ..
+.\run.ps1
+```
+
+### 6️⃣ Open Browser
+
+Navigate to: **http://localhost:5000**
+
+---
+
+## 🍎 Setup for macOS/Linux
+
+### Quick Setup Script
+
+```bash
+# Clone repository
+git clone https://github.com/turkeydei/mini-market.git
+cd mini-market
+
+# Run automated setup
+./quick-start.sh
+```
+
+### Manual Setup
+
+```bash
+# 1. Start SQL Server (Docker)
 docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Admin@123456" \
    -p 1433:1433 --name sqlserver \
    -d mcr.microsoft.com/mssql/server:2022-latest
 
-# 3. Apply database migrations
+# 2. Apply database migrations
 cd WebShop
 dotnet ef database update
 
-# 4. Run application
+# 3. Run application
 dotnet run --urls "http://localhost:5000"
 ```
 
 **Open browser:** http://localhost:5000
-
-### Quick Setup Scripts
-
-**macOS/Linux:**
-```bash
-./quick-start.sh
-```
-
-**Windows (PowerShell):**
-```powershell
-.\setup.ps1
-.\run.ps1
-```
 
 ## 🔑 Demo Accounts
 
@@ -146,11 +228,24 @@ dotnet clean
 ## 🐛 Troubleshooting
 
 ### Database Connection Failed
-- Ensure Docker is running
+**Solution:**
+- Ensure Docker Desktop is running
 - Check SQL Server container: `docker ps`
 - Restart container: `docker restart sqlserver`
+- Check connection string in `appsettings.json`
 
 ### Port Already in Use
+
+**Windows (PowerShell):**
+```powershell
+# Find process using port 5000
+netstat -ano | findstr :5000
+
+# Kill process (replace PID with actual process ID)
+taskkill /PID <PID> /F
+```
+
+**macOS/Linux:**
 ```bash
 # Find process using port 5000
 lsof -i :5000
@@ -161,8 +256,14 @@ kill -9 <PID>
 
 ### EF Core Tools Not Found
 ```bash
-# Install EF Core tools
+# Install EF Core tools globally
 dotnet tool install --global dotnet-ef
+
+# Update if already installed
+dotnet tool update --global dotnet-ef
+
+# Verify installation
+dotnet ef --version
 ```
 
 ### Build Errors
@@ -171,6 +272,77 @@ dotnet tool install --global dotnet-ef
 dotnet clean
 dotnet restore
 dotnet build
+```
+
+### Docker Container Won't Start (Windows)
+
+**Check WSL 2:**
+```powershell
+wsl --list --verbose
+# Should show WSL 2 installed
+```
+
+**Enable Virtualization:**
+1. Restart PC → Enter BIOS (F2/Del)
+2. Enable "Intel VT-x" or "AMD-V"
+3. Save and restart
+
+**Docker Desktop Issues:**
+- Restart Docker Desktop
+- Check Docker settings → Resources → ensure WSL 2 is enabled
+- Try: `docker system prune -a` (removes all containers/images)
+
+### SQL Server Container Exits Immediately
+
+**Check logs:**
+```powershell
+docker logs sqlserver
+```
+
+**Common fixes:**
+- Increase Docker memory: Docker Desktop → Settings → Resources → Memory (min 4GB)
+- Remove old container: `docker rm -f sqlserver`
+- Recreate container with correct password
+
+### Cannot Access http://localhost:5000
+
+**Check if app is running:**
+```powershell
+# Windows
+netstat -ano | findstr :5000
+
+# macOS/Linux  
+lsof -i :5000
+```
+
+**Firewall issues (Windows):**
+- Add exception for port 5000 in Windows Defender Firewall
+- Or run PowerShell as Administrator
+
+### Visual Studio Issues
+
+**If using Visual Studio 2022:**
+1. Open `MiniMarket.sln`
+2. Set `WebShop` as Startup Project
+3. Update `launchSettings.json` if needed
+4. Run with IIS Express or Kestrel
+
+### Database Migration Errors
+
+**"No migrations found":**
+```bash
+cd WebShop
+dotnet ef migrations add InitialCreate -p ../Persistence
+dotnet ef database update
+```
+
+**"Pending model changes":**
+```bash
+# Create new migration for changes
+dotnet ef migrations add YourMigrationName -p ../Persistence
+
+# Apply migration
+dotnet ef database update
 ```
 
 ## 📝 API Endpoints
