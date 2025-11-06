@@ -15,5 +15,13 @@ public interface IUnitOfWork : IDisposable
     // Save changes
     Task<int> SaveAsync();
     int Save();
+    
+    // Complex queries
+    Task<HoaDon?> GetOrderByIdWithDetailsAsync(int orderId, int userId);
+    Task<IEnumerable<HoaDon>> GetOrdersByUserWithDetailsAsync(int userId);
+    Task<IEnumerable<HangHoa>> GetAllProductsWithCategoryAsync();
+    Task<IEnumerable<HangHoa>> GetProductsByCategoryWithDetailsAsync(int categoryId);
+    Task<HangHoa?> GetProductByIdWithCategoryAsync(int id);
+    Task<HoaDon?> GetOrderForCancelAsync(int orderId, int userId);
 }
 

@@ -1,0 +1,17 @@
+**/.dockerignore
+**/.git
+**/.gitignore
+**/.vs
+**/.vscode
+**/.idea
+**/bin
+**/obj
+**/node_modules
+**/.env
+**/.env.local
+**/Dockerfile*
+**/docker-compose*.yml
+**/*.md
+**/.DS_Store
+**/Thumbs.db
+

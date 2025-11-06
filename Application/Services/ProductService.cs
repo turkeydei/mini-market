@@ -1,44 +1,30 @@
 using Application.Interfaces;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Services;
 
 public class ProductService : IProductService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly MiniMarketDbContext _context;
 
-    public ProductService(IUnitOfWork unitOfWork, MiniMarketDbContext context)
+    public ProductService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _context = context;
     }
 
     public async Task<IEnumerable<HangHoa>> GetAllProductsAsync()
     {
-        return await _context.HangHoas
-            .Include(h => h.Loai)
-            .OrderByDescending(h => h.SoLanXem)
-            .Take(20)
-            .ToListAsync();
+        return await _unitOfWork.GetAllProductsWithCategoryAsync();
     }
 
     public async Task<IEnumerable<HangHoa>> GetProductsByCategoryAsync(int categoryId)
     {
-        return await _context.HangHoas
-            .Include(h => h.Loai)
-            .Where(h => h.MaLoai == categoryId)
-            .OrderByDescending(h => h.SoLanXem)
-            .ToListAsync();
+        return await _unitOfWork.GetProductsByCategoryWithDetailsAsync(categoryId);
     }
 
     public async Task<HangHoa?> GetProductByIdAsync(int id)
     {
-        return await _context.HangHoas
-            .Include(h => h.Loai)
-            .FirstOrDefaultAsync(h => h.MaHH == id);
+        return await _unitOfWork.GetProductByIdWithCategoryAsync(id);
     }
 
     public async Task<HangHoa> CreateProductAsync(HangHoa product)

@@ -12,15 +12,15 @@ using Persistence;
 namespace Persistence.Migrations
 {
     [DbContext(typeof(MiniMarketDbContext))]
-    [Migration("20251028031220_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251106054906_SimplifiedSchema")]
+    partial class SimplifiedSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.10")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);

@@ -77,12 +77,9 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
-
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 Console.WriteLine("✅ Ứng dụng đã sẵn sàng!");
 Console.WriteLine("🌐 Truy cập: https://localhost:5001 hoặc http://localhost:5000");

@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # SQL Server Database
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: minimarket-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Admin@123456
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - minimarket-network
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Admin@123456 -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  # WebShop Application
+  webshop:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: minimarket-webshop
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=MiniMarketDB;User Id=sa;Password=Admin@123456;TrustServerCertificate=True;Encrypt=False
+    depends_on:
+      sqlserver:
+        condition: service_started
+    networks:
+      - minimarket-network
+    restart: unless-stopped
+
+volumes:
+  sqlserver_data:
+
+networks:
+  minimarket-network:
+    driver: bridge
+

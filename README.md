@@ -37,23 +37,66 @@ Modern e-commerce web application built with **3-tier architecture**, **Reposito
 
 ### Prerequisites
 
-- [.NET 9.0 SDK](https://dotnet.microsoft.com/download)
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/download) (hoặc .NET 9.0)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop) (for SQL Server)
 - Git
 
 ---
 
-## 💻 Setup for Windows Developers
+## 🐳 Quick Start with Docker (Recommended)
+
+Cách đơn giản nhất để chạy ứng dụng - tất cả đã được cấu hình sẵn:
+
+```powershell
+# 1. Clone repository
+git clone https://github.com/turkeydei/mini-market.git
+cd mini-market
+
+# 2. Build và chạy với Docker Compose
+docker-compose up -d
+
+# 3. Kiểm tra containers đang chạy
+docker ps
+
+# 4. Mở trình duyệt
+# http://localhost:5000
+```
+
+**Docker sẽ tự động:**
+- ✅ Tải và khởi động SQL Server container
+- ✅ Build ứng dụng WebShop
+- ✅ Apply database migrations
+- ✅ Seed dữ liệu mẫu
+
+**Quản lý containers:**
+```powershell
+# Xem logs
+docker logs minimarket-webshop
+docker logs minimarket-sqlserver
+
+# Dừng containers
+docker-compose down
+
+# Khởi động lại
+docker-compose up -d
+
+# Xem trạng thái
+docker ps
+```
+
+---
+
+## 💻 Setup for Windows Developers (Manual)
 
 ### 1️⃣ Install Prerequisites
 
-#### Install .NET 9.0 SDK
-1. Download from: https://dotnet.microsoft.com/download/dotnet/9.0
-2. Run installer `dotnet-sdk-9.0.xxx-win-x64.exe`
+#### Install .NET 8.0 SDK (hoặc .NET 9.0)
+1. Download from: https://dotnet.microsoft.com/download/dotnet/8.0
+2. Run installer `dotnet-sdk-8.0.xxx-win-x64.exe`
 3. Verify installation:
 ```powershell
 dotnet --version
-# Should show: 9.0.x
+# Should show: 8.0.x hoặc 9.0.x
 ```
 
 #### Install Docker Desktop
@@ -96,6 +139,9 @@ docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Admin@123456" -p 1433:1433 --name 
 
 # Verify container is running
 docker ps
+
+# Nếu container đã tồn tại, start lại:
+docker start sqlserver
 ```
 
 ### 4️⃣ Apply Database Migrations
@@ -167,12 +213,13 @@ dotnet run --urls "http://localhost:5000"
 
 ## 📦 Tech Stack
 
-- **Backend:** ASP.NET Core MVC 9.0
-- **ORM:** Entity Framework Core
+- **Backend:** ASP.NET Core MVC 8.0
+- **ORM:** Entity Framework Core 8.0
 - **Database:** SQL Server 2022
 - **Frontend:** Bootstrap 5 + jQuery
 - **Icons:** Bootstrap Icons
 - **Authentication:** Cookie-based Auth
+- **Containerization:** Docker & Docker Compose
 
 ## 📁 Project Structure
 

@@ -4,33 +4,276 @@ Complete guide for Windows developers to setup and run this ASP.NET Core project
 
 ## 📋 Table of Contents
 
-1. [Prerequisites Installation](#prerequisites-installation)
-2. [Project Setup](#project-setup)
-3. [Database Setup](#database-setup)
-4. [Running the Application](#running-the-application)
-5. [Troubleshooting](#troubleshooting)
-6. [IDE Setup](#ide-setup)
+1. [Quick Start with Docker](#quick-start-with-docker-recommended)
+2. [Prerequisites Installation](#prerequisites-installation)
+3. [Project Setup](#project-setup)
+4. [Database Setup](#database-setup)
+5. [Running the Application](#running-the-application)
+6. [Troubleshooting](#troubleshooting)
+7. [IDE Setup](#ide-setup)
+
+---
+
+## 🐳 Quick Start with Docker (Recommended)
+
+Cách nhanh nhất để chạy ứng dụng - tất cả đã được cấu hình sẵn.
+
+### 📦 Bước 1: Cài đặt Docker Desktop trên Windows
+
+1. **Tải Docker Desktop:**
+   - Truy cập: https://www.docker.com/products/docker-desktop/
+   - Click "Download for Windows"
+   - Chọn phiên bản phù hợp (64-bit thường)
+
+2. **Cài đặt:**
+   - Chạy file `Docker Desktop Installer.exe`
+   - Chọn "Use WSL 2 instead of Hyper-V" (khuyến nghị)
+   - Hoàn tất cài đặt và khởi động lại máy tính
+
+3. **Kiểm tra cài đặt:**
+   ```powershell
+   # Mở PowerShell và kiểm tra
+   docker --version
+   # Kết quả: Docker version xx.x.x
+   
+   docker-compose --version
+   # Kết quả: Docker Compose version xx.x.x
+   ```
+
+4. **Khởi động Docker Desktop:**
+   - Tìm "Docker Desktop" trong Start Menu
+   - Chạy ứng dụng và đợi Docker khởi động hoàn toàn (icon whale ở system tray)
+
+### 🚀 Bước 2: Clone và chạy dự án
+
+```powershell
+# 1. Clone repository (hoặc mở thư mục dự án nếu đã có)
+git clone https://github.com/turkeydei/mini-market.git
+cd mini-market
+
+# 2. Kiểm tra Docker đang chạy
+docker ps
+# Nếu không có lỗi, Docker đã sẵn sàng
+
+# 3. Build và chạy tất cả containers
+docker-compose up -d
+```
+
+**Giải thích lệnh:**
+- `docker-compose up -d`: Build images và chạy containers ở chế độ background (detached)
+- Lần đầu chạy sẽ mất 5-10 phút để tải images và build
+
+### ⏳ Bước 3: Chờ containers khởi động
+
+```powershell
+# Xem trạng thái containers
+docker ps
+
+# Kiểm tra logs của ứng dụng (sẽ thấy quá trình migrate và seed data)
+docker logs minimarket-webshop -f
+# Nhấn Ctrl+C để dừng xem logs
+
+# Kiểm tra logs SQL Server
+docker logs minimarket-sqlserver
+```
+
+**Khi thấy dòng này trong logs nghĩa là đã sẵn sàng:**
+```
+✅ Ứng dụng đã sẵn sàng!
+🌐 Truy cập: https://localhost:5001 hoặc http://localhost:5000
+Now listening on: http://[::]:8080
+```
+
+### 🌐 Bước 4: Truy cập ứng dụng
+
+Mở trình duyệt và truy cập:
+- **http://localhost:5000** (HTTP)
+- **https://localhost:5001** (HTTPS)
+
+**Tài khoản demo:**
+- **Admin:** `admin` / `Admin@123`
+- **User:** `user1` / `User@123`
+
+### 🛠️ Quản lý containers
+
+```powershell
+# Xem tất cả containers đang chạy
+docker ps
+
+# Xem logs ứng dụng (theo dõi real-time)
+docker logs minimarket-webshop -f
+
+# Xem logs SQL Server
+docker logs minimarket-sqlserver -f
+
+# Dừng tất cả containers (giữ lại data)
+docker-compose stop
+
+# Khởi động lại containers
+docker-compose start
+
+# Dừng và xóa containers (giữ lại volumes/data)
+docker-compose down
+
+# Dừng và xóa tất cả (bao gồm volumes - mất data!)
+docker-compose down -v
+
+# Khởi động lại từ đầu
+docker-compose up -d --build
+```
+
+### 📊 Kiểm tra trạng thái
+
+```powershell
+# Xem containers đang chạy
+docker ps
+
+# Kết quả mong đợi:
+# CONTAINER ID   IMAGE                    STATUS         PORTS
+# xxxxx          mini-market-webshop      Up X minutes   0.0.0.0:5000->8080/tcp
+# yyyyy          mssql/server:2022-latest Up X minutes   0.0.0.0:1433->1433/tcp
+
+# Kiểm tra port đang được sử dụng
+netstat -ano | findstr :5000
+```
+
+### 🐛 Xử lý lỗi thường gặp
+
+#### ❌ Docker Desktop không khởi động
+
+**Nguyên nhân:** WSL 2 chưa được cài đặt hoặc chưa bật.
+
+**Giải pháp:**
+```powershell
+# Cài WSL 2 (chạy PowerShell as Administrator)
+wsl --install
+
+# Khởi động lại máy sau khi cài
+# Sau đó mở Docker Desktop lại
+```
+
+#### ❌ Container không chạy được
+
+**Kiểm tra:**
+```powershell
+# Xem logs để tìm lỗi
+docker logs minimarket-webshop
+docker logs minimarket-sqlserver
+
+# Xem trạng thái chi tiết
+docker ps -a
+```
+
+#### ❌ Port 5000 đã được sử dụng
+
+**Giải pháp:**
+```powershell
+# Tìm process đang dùng port 5000
+netstat -ano | findstr :5000
+
+# Dừng process (thay PID bằng số thực tế)
+taskkill /PID <PID> /F
+
+# Hoặc đổi port trong docker-compose.yml
+# Sửa: "5000:8080" thành "5002:8080"
+```
+
+#### ❌ Không thể kết nối đến localhost:5000
+
+**Kiểm tra:**
+1. Containers có đang chạy không: `docker ps`
+2. Firewall có chặn không - tạm thời tắt Windows Firewall để test
+3. Thử truy cập `http://127.0.0.1:5000` thay vì `localhost`
+
+#### ❌ Lỗi "bind: address already in use"
+
+**Giải pháp:**
+```powershell
+# Dừng tất cả containers
+docker-compose down
+
+# Đợi 5 giây rồi chạy lại
+docker-compose up -d
+```
+
+### 🔄 Các lệnh thường dùng
+
+```powershell
+# Khởi động lại toàn bộ (sau khi sửa code)
+docker-compose down
+docker-compose up -d --build
+
+# Xem logs real-time
+docker-compose logs -f
+
+# Vào trong container (debug)
+docker exec -it minimarket-webshop bash
+docker exec -it minimarket-sqlserver bash
+
+# Xóa tất cả images và containers (cleanup)
+docker system prune -a
+```
+
+### 📝 Lưu ý quan trọng
+
+1. **Lần đầu chạy:** Mất 5-10 phút để tải images và build
+2. **Dữ liệu:** Dữ liệu SQL Server được lưu trong Docker volume, không mất khi restart
+3. **Ports:** Đảm bảo ports 5000, 5001, 1433 không bị sử dụng bởi ứng dụng khác
+4. **Memory:** Docker Desktop cần ít nhất 4GB RAM, khuyến nghị 8GB
+5. **Không cần .NET SDK:** Khi chạy với Docker, bạn không cần cài .NET SDK trên máy
+
+### 🎯 Tóm tắt nhanh
+
+**Cách 1: Sử dụng script tự động (Khuyến nghị)**
+```powershell
+# Mở PowerShell trong thư mục dự án
+cd mini-market
+
+# Chạy script
+.\run-docker.ps1
+
+# Script sẽ tự động:
+# - Kiểm tra Docker
+# - Build và chạy containers
+# - Hiển thị thông tin truy cập
+```
+
+**Cách 2: Chạy thủ công**
+```powershell
+# 1. Cài Docker Desktop
+# 2. Mở PowerShell trong thư mục dự án
+cd mini-market
+
+# 3. Chạy
+docker-compose up -d
+
+# 4. Đợi vài phút, kiểm tra logs
+docker logs minimarket-webshop
+
+# 5. Mở trình duyệt
+# http://localhost:5000
+```
 
 ---
 
 ## 🔧 Prerequisites Installation
 
-### 1. Install .NET 9.0 SDK
+### 1. Install .NET 8.0 SDK
 
 **Download & Install:**
-1. Visit: https://dotnet.microsoft.com/download/dotnet/9.0
+1. Visit: https://dotnet.microsoft.com/download/dotnet/8.0
 2. Download **Windows x64 Installer**
-3. Run `dotnet-sdk-9.0.xxx-win-x64.exe`
+3. Run `dotnet-sdk-8.0.xxx-win-x64.exe`
 4. Follow installation wizard
 
 **Verify Installation:**
 ```powershell
 # Open PowerShell or Command Prompt
 dotnet --version
-# Expected output: 9.0.x
+# Expected output: 8.0.x hoặc 9.0.x
 
 dotnet --list-sdks
-# Should show .NET 9.0 SDK
+# Should show .NET 8.0 SDK hoặc .NET 9.0 SDK
 ```
 
 ### 2. Install Docker Desktop
@@ -144,6 +387,9 @@ docker ps
 # Expected output:
 # CONTAINER ID   IMAGE                            STATUS
 # xxxxx          mcr.microsoft.com/mssql/server   Up xx seconds
+
+# Nếu container đã tồn tại, start lại:
+docker start sqlserver
 ```
 
 ### 2. Apply Database Migrations

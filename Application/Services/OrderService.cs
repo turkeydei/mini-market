@@ -1,19 +1,15 @@
 using Application.Interfaces;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-using Persistence;
 
 namespace Application.Services;
 
 public class OrderService : IOrderService
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly MiniMarketDbContext _context;
 
-    public OrderService(IUnitOfWork unitOfWork, MiniMarketDbContext context)
+    public OrderService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _context = context;
     }
 
     public async Task<HoaDon> CreateOrderAsync(HoaDon order, List<ChiTietHD> orderDetails)
@@ -43,32 +39,17 @@ public class OrderService : IOrderService
 
     public async Task<HoaDon?> GetOrderByIdAsync(int orderId, int userId)
     {
-        return await _context.HoaDons
-            .Include(h => h.ChiTietHDs)
-                .ThenInclude(ct => ct.HangHoa)
-                    .ThenInclude(hh => hh!.Loai)
-            .Include(h => h.PaymentTransaction)
-            .Include(h => h.User)
-            .FirstOrDefaultAsync(h => h.MaHD == orderId && h.MaUser == userId);
+        return await _unitOfWork.GetOrderByIdWithDetailsAsync(orderId, userId);
     }
 
     public async Task<IEnumerable<HoaDon>> GetOrdersByUserAsync(int userId)
     {
-        return await _context.HoaDons
-            .Include(h => h.ChiTietHDs)
-                .ThenInclude(ct => ct.HangHoa)
-            .Include(h => h.PaymentTransaction)
-            .Where(h => h.MaUser == userId)
-            .OrderByDescending(h => h.NgayDat)
-            .ToListAsync();
+        return await _unitOfWork.GetOrdersByUserWithDetailsAsync(userId);
     }
 
     public async Task<bool> CancelOrderAsync(int orderId, int userId)
     {
-        var order = await _context.HoaDons
-            .Include(h => h.PaymentTransaction)
-            .Include(h => h.ChiTietHDs)
-            .FirstOrDefaultAsync(h => h.MaHD == orderId && h.MaUser == userId);
+        var order = await _unitOfWork.GetOrderForCancelAsync(orderId, userId);
 
         if (order == null || order.Status != "Pending")
             return false;

@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories;
 
@@ -51,6 +52,62 @@ public class UnitOfWork : IUnitOfWork
     public void Dispose()
     {
         _context.Dispose();
+    }
+    
+    // Complex queries
+    public async Task<HoaDon?> GetOrderByIdWithDetailsAsync(int orderId, int userId)
+    {
+        return await _context.HoaDons
+            .Include(h => h.ChiTietHDs)
+                .ThenInclude(ct => ct.HangHoa)
+                    .ThenInclude(hh => hh!.Loai)
+            .Include(h => h.PaymentTransaction)
+            .Include(h => h.User)
+            .FirstOrDefaultAsync(h => h.MaHD == orderId && h.MaUser == userId);
+    }
+    
+    public async Task<IEnumerable<HoaDon>> GetOrdersByUserWithDetailsAsync(int userId)
+    {
+        return await _context.HoaDons
+            .Include(h => h.ChiTietHDs)
+                .ThenInclude(ct => ct.HangHoa)
+            .Include(h => h.PaymentTransaction)
+            .Where(h => h.MaUser == userId)
+            .OrderByDescending(h => h.NgayDat)
+            .ToListAsync();
+    }
+    
+    public async Task<IEnumerable<HangHoa>> GetAllProductsWithCategoryAsync()
+    {
+        return await _context.HangHoas
+            .Include(h => h.Loai)
+            .OrderByDescending(h => h.SoLanXem)
+            .Take(20)
+            .ToListAsync();
+    }
+    
+    public async Task<IEnumerable<HangHoa>> GetProductsByCategoryWithDetailsAsync(int categoryId)
+    {
+        return await _context.HangHoas
+            .Include(h => h.Loai)
+            .Where(h => h.MaLoai == categoryId)
+            .OrderByDescending(h => h.SoLanXem)
+            .ToListAsync();
+    }
+    
+    public async Task<HangHoa?> GetProductByIdWithCategoryAsync(int id)
+    {
+        return await _context.HangHoas
+            .Include(h => h.Loai)
+            .FirstOrDefaultAsync(h => h.MaHH == id);
+    }
+    
+    public async Task<HoaDon?> GetOrderForCancelAsync(int orderId, int userId)
+    {
+        return await _context.HoaDons
+            .Include(h => h.PaymentTransaction)
+            .Include(h => h.ChiTietHDs)
+            .FirstOrDefaultAsync(h => h.MaHD == orderId && h.MaUser == userId);
     }
 }
 
