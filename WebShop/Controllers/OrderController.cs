@@ -52,6 +52,14 @@ public class OrderController : Controller
         return View(order);
     }
 
+    // GET: /Order/Failed
+    [AllowAnonymous] // Cho phép không đăng nhập vì VNPay redirect về
+    public IActionResult Failed(string? message = null)
+    {
+        ViewBag.Message = message ?? "Thanh toán thất bại. Vui lòng thử lại.";
+        return View();
+    }
+
     // GET: /Order/Details/{id}
     public async Task<IActionResult> Details(int id)
     {

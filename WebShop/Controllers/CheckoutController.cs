@@ -104,11 +104,17 @@ public class CheckoutController : Controller
             await _context.SaveChangesAsync();
 
             // Trả về kết quả với redirect URL
+            // Nếu là VNPay, sẽ redirect đến VNPay payment page sau
+            var redirectUrl = request.PhuongThucTT == "VNPay" 
+                ? Url.Action("Index", "Checkout", new { orderId = hoaDon.MaHD }) // Sẽ xử lý ở frontend
+                : Url.Action("Success", "Order", new { id = hoaDon.MaHD });
+            
             return Ok(new
             {
                 success = true,
                 message = "Đặt hàng thành công",
-                redirectUrl = Url.Action("Success", "Order", new { id = hoaDon.MaHD }),
+                redirectUrl = redirectUrl,
+                paymentMethod = request.PhuongThucTT,
                 data = new
                 {
                     maHD = hoaDon.MaHD,

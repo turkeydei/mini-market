@@ -52,6 +52,14 @@
                     </div>
                     
                     <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="phuongThucTT" id="vnpay" value="VNPay">
+                        <label class="form-check-label" for="vnpay">
+                            <strong>VNPay</strong>
+                            <br><small class="text-muted">Thanh toán qua VNPay (Thẻ ATM, Internet Banking, QR Code)</small>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mb-2">
                         <input class="form-check-input" type="radio" name="phuongThucTT" id="bankTransfer" value="Bank Transfer">
                         <label class="form-check-label" for="bankTransfer">
                             <strong>Chuyển khoản ngân hàng</strong>
@@ -65,6 +73,17 @@
                             <strong>Ví điện tử</strong>
                             <br><small class="text-muted">Thanh toán qua MoMo, ZaloPay, etc.</small>
                         </label>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3" id="vnpayInfo" style="display: none;">
+                        <small>
+                            <strong>Thông tin thẻ test VNPay:</strong><br>
+                            Ngân hàng: NCB<br>
+                            Số thẻ: 9704198526191432198<br>
+                            Tên chủ thẻ: NGUYEN VAN A<br>
+                            Ngày phát hành: 07/15<br>
+                            Mật khẩu OTP: 123456
+                        </small>
                     </div>
                 </div>
             </div>
@@ -158,12 +177,23 @@
                 }).format(amount);
             }
             
+            // Hiển thị thông tin thẻ test khi chọn VNPay
+            $('input[name="phuongThucTT"]').change(function() {
+                if ($(this).val() === 'VNPay') {
+                    $('#vnpayInfo').show();
+                } else {
+                    $('#vnpayInfo').hide();
+                }
+            });
+            
             // Xử lý đặt hàng
             $('#btnCheckout').click(function() {
                 if (!$('#checkoutForm')[0].checkValidity()) {
                     $('#checkoutForm')[0].reportValidity();
                     return;
                 }
+                
+                var paymentMethod = $('input[name="phuongThucTT"]:checked').val();
                 
                 // Giả sử MaUser = 1 (trong thực tế lấy từ session/authentication)
                 let orderData = {
@@ -172,12 +202,15 @@
                     soDienThoai: $('#soDienThoai').val(),
                     phiVanChuyen: 30000,
                     ghiChu: $('#ghiChu').val(),
-                    phuongThucTT: $('input[name="phuongThucTT"]:checked').val(),
+                    phuongThucTT: paymentMethod,
                     items: cartItems.map(item => ({
                         maHH: item.maHH,
                         soLuong: item.soLuong
                     }))
                 };
+                
+                // Disable button để tránh click nhiều lần
+                $('#btnCheckout').prop('disabled', true).text('Đang xử lý...');
                 
                 // Gửi request tạo đơn hàng
                 $.ajax({
@@ -187,20 +220,51 @@
                     data: JSON.stringify(orderData),
                     success: function(response) {
                         if (response.success) {
-                            // Xóa giỏ hàng
-                            localStorage.removeItem('cart');
-                            
-                            // Chuyển đến trang thành công
-                            window.location.href = response.redirectUrl;
+                            if (paymentMethod === 'VNPay') {
+                                // Nếu là VNPay, tạo payment URL và redirect
+                                createVnPayPayment(response.data.maHD, response.data.tongTien);
+                            } else {
+                                // Các phương thức khác, xóa giỏ hàng và redirect
+                                localStorage.removeItem('cart');
+                                window.location.href = response.redirectUrl;
+                            }
                         } else {
                             alert('Đặt hàng thất bại: ' + response.message);
+                            $('#btnCheckout').prop('disabled', false).text('Đặt Hàng');
                         }
                     },
                     error: function(xhr) {
-                        alert('Có lỗi xảy ra: ' + xhr.responseText);
+                        alert('Có lỗi xảy ra: ' + (xhr.responseJSON?.message || xhr.responseText));
+                        $('#btnCheckout').prop('disabled', false).text('Đặt Hàng');
                     }
                 });
             });
+            
+            // Tạo VNPay payment URL và redirect
+            function createVnPayPayment(orderId, amount) {
+                $.ajax({
+                    url: '/Payment/CreateVnPayPayment',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ orderId: orderId }),
+                    success: function(response) {
+                        if (response.success) {
+                            // Xóa giỏ hàng
+                            localStorage.removeItem('cart');
+                            
+                            // Redirect đến VNPay
+                            window.location.href = response.paymentUrl;
+                        } else {
+                            alert('Tạo thanh toán VNPay thất bại: ' + response.message);
+                            $('#btnCheckout').prop('disabled', false).text('Đặt Hàng');
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Có lỗi xảy ra khi tạo thanh toán VNPay: ' + (xhr.responseJSON?.message || xhr.responseText));
+                        $('#btnCheckout').prop('disabled', false).text('Đặt Hàng');
+                    }
+                });
+            }
             
             // Render cart khi load trang
             renderCart();

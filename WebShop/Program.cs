@@ -20,6 +20,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // Add Application Services
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<Application.Interfaces.IVnPayService, Application.Services.VnPayService>();
 
 // Add Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
