@@ -206,6 +206,56 @@ public class AuthController : Controller
         TempData["SuccessMessage"] = "Đổi mật khẩu thành công!";
         return RedirectToAction("ChangePassword");
     }
+    [Authorize]
+    [HttpGet]
+    public IActionResult ChangeInfo()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var user = _context.Users.Find(int.Parse(userId!));
+        if (user == null) return NotFound();
+
+        var model = new ProfileUpdateViewModel
+        {
+            HoTen = user.HoTen,
+            DiaChi = user.DiaChi,
+            Email = user.Email,
+            DienThoai = user.DienThoai,
+            GioiTinh = user.GioiTinh,
+            NgaySinh = user.NgaySinh
+        };
+
+        return View(model);
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult ChangeInfo(ProfileUpdateViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var user = _context.Users.Find(int.Parse(userId!));
+        if (user == null) return NotFound();
+
+        user.HoTen = model.HoTen;
+        user.DiaChi = model.DiaChi;
+        user.GioiTinh = model.GioiTinh;
+        user.NgaySinh = model.NgaySinh;
+        user.DienThoai = model.DienThoai;
+        user.Email = model.Email;
+    
+        _context.Users.Update(user);
+        _context.SaveChanges();
+
+        TempData["Success"] = "Cập nhật thông tin thành công!";
+
+        return RedirectToAction(nameof(ChangeInfo));
+    }
+
 
 }
 
