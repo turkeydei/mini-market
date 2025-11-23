@@ -168,5 +168,44 @@ public class AuthController : Controller
     {
         return View();
     }
+    // GET: /Auth/ChangePassword
+    [Authorize]
+    [HttpGet]
+    public IActionResult ChangePassword()
+    {
+        return View();
+    }
+
+    // POST: /Auth/ChangePassword
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var user = await _context.Users.FindAsync(userId);
+
+        if (user == null)
+            return NotFound();
+
+        // Kiểm tra mật khẩu cũ có đúng không
+        if (user.MatKhau != model.MatKhauCu)
+        {
+            ModelState.AddModelError("MatKhauCu", "Mật khẩu hiện tại không đúng");
+            return View(model);
+        }
+
+        // Cập nhật mật khẩu mới
+        user.MatKhau = model.MatKhauMoi;
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Đổi mật khẩu thành công!";
+        return RedirectToAction("ChangePassword");
+    }
+
 }
 
