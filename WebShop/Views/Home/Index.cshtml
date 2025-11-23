@@ -45,19 +45,25 @@
                 
                 <div class="col-md-3 mb-4">
                     <div class="card h-100 shadow-sm product-card">
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <div class="card-img-top position-relative" style="height: 195px; overflow: hidden;">
                             @if (!string.IsNullOrEmpty(product.Hinh))
                             {
-                                <img src="~/images/@product.Hinh" alt="@product.TenHH" class="img-fluid" style="max-height: 180px; object-fit: cover;" />
+                                <img src="/images/@product.Hinh"
+                                     alt="@product.TenHH"
+                                     class="w-100 h-100"
+                                     style="object-fit: cover;" />
                             }
                             else
                             {
-                                <div class="text-center p-4">
-                                    <i class="bi bi-image" style="font-size: 3rem; color: #ccc;"></i>
-                                    <p class="text-muted small mt-2">Không có hình ảnh</p>
+                                <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                    <div class="text-center">
+                                        <i class="bi bi-image" style="font-size: 3rem; color: #ccc;"></i>
+                                        <p class="text-muted small mt-2">No Image</p>
+                                    </div>
                                 </div>
                             }
                         </div>
+
                         
                         <div class="card-body">
                             <span class="badge bg-secondary mb-2">@product.Loai?.TenLoai</span>
