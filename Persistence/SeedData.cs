@@ -511,6 +511,7 @@ public static class SeedData
                     MoTa = "Giày thể thao Adidas Ultraboost"
                 },
 
+
                 // Sách
                 new HangHoa
                 {
@@ -596,7 +597,7 @@ public static class SeedData
                     MoTa = "Sách phát triển bản thân, Stephen R. Covey" 
                 }
             };
-
+            //them data
             await context.HangHoas.AddRangeAsync(hangHoas);
             await context.SaveChangesAsync();
             Console.WriteLine("✓ Đã seed 12 sản phẩm");
