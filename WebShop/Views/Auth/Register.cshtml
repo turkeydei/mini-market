@@ -3,105 +3,124 @@
     ViewData["Title"] = "Đăng ký tài khoản";
 }
 
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body p-5">
-                    <div class="text-center mb-4">
-                        <h2 class="fw-bold">🛒 Đăng ký tài khoản</h2>
-                        <p class="text-muted">Tạo tài khoản để mua sắm dễ dàng hơn</p>
-                    </div>
-
-                    <form asp-action="Register" method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-
-                        <div class="mb-3">
-                            <label asp-for="HoTen" class="form-label">
-                                <i class="bi bi-person"></i> Họ và tên <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="HoTen" class="form-control" placeholder="Nguyễn Văn A" />
-                            <span asp-validation-for="HoTen" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Email" class="form-label">
-                                <i class="bi bi-envelope"></i> Email <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="Email" class="form-control" type="email" placeholder="example@email.com" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="MatKhau" class="form-label">
-                                <i class="bi bi-lock"></i> Mật khẩu <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="MatKhau" class="form-control" type="password" placeholder="Tối thiểu 6 ký tự" />
-                            <span asp-validation-for="MatKhau" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="XacNhanMatKhau" class="form-label">
-                                <i class="bi bi-lock-fill"></i> Xác nhận mật khẩu <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="XacNhanMatKhau" class="form-control" type="password" placeholder="Nhập lại mật khẩu" />
-                            <span asp-validation-for="XacNhanMatKhau" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="DienThoai" class="form-label">
-                                <i class="bi bi-telephone"></i> Số điện thoại
-                            </label>
-                            <input asp-for="DienThoai" class="form-control" placeholder="0123456789" />
-                            <span asp-validation-for="DienThoai" class="text-danger"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="DiaChi" class="form-label">
-                                <i class="bi bi-geo-alt"></i> Địa chỉ
-                            </label>
-                            <textarea asp-for="DiaChi" class="form-control" rows="2" placeholder="123 Đường ABC, Quận XYZ"></textarea>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label asp-for="GioiTinh" class="form-label">
-                                    <i class="bi bi-gender-ambiguous"></i> Giới tính
-                                </label>
-                                <select asp-for="GioiTinh" class="form-select">
-                                    <option value="">-- Chọn --</option>
-                                    <option value="0">Nam</option>
-                                    <option value="1">Nữ</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label asp-for="NgaySinh" class="form-label">
-                                    <i class="bi bi-calendar"></i> Ngày sinh
-                                </label>
-                                <input asp-for="NgaySinh" class="form-control" type="date" />
-                            </div>
-                        </div>
-
-                        <div class="d-grid gap-2 mb-3">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-check-circle"></i> Đăng ký
-                            </button>
-                        </div>
-
-                        <div class="text-center">
-                            <p class="text-muted">
-                                Đã có tài khoản? 
-                                <a asp-action="Login" class="text-decoration-none fw-bold">Đăng nhập ngay</a>
-                            </p>
-                        </div>
-                    </form>
+<div class="auth-page register-page">
+    <div class="auth-card">
+        <div class="auth-info">
+            <h2>Tạo tài khoản mới</h2>
+            <p>Chỉ mất một phút để tạo tài khoản Mini Market. Bạn sẽ có thể lưu nhiều địa chỉ giao hàng, xem lịch sử mua sắm và nhận ưu đãi độc quyền.</p>
+            <ul>
+                <li>Thanh toán nhanh trong một lần chạm</li>
+                <li>Theo dõi đơn hàng và trạng thái giao hàng</li>
+                <li>Nhận thông báo các chương trình flash-sale</li>
+            </ul>
+            <div class="demo-box">
+                <p class="text-label">Đã có tài khoản?</p>
+                <div>
+                    <strong>Đăng nhập ngay</strong>
+                    <span>Truy cập tất cả tính năng chỉ với một lần đăng nhập.</span>
                 </div>
+            </div>
+        </div>
+
+        <div class="auth-form">
+            <div class="auth-form__header">
+                <h3>Tạo tài khoản mới ✨</h3>
+                <p>Điền thông tin bên dưới để bắt đầu mua sắm</p>
+            </div>
+
+            <form asp-action="Register" method="post" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger soft-card"></div>
+
+                <div class="field-group">
+                    <label asp-for="HoTen">Họ và tên</label>
+                    <div class="field-control">
+                        <i class="bi bi-person"></i>
+                        <input asp-for="HoTen" placeholder="Nguyễn Văn A" />
+                    </div>
+                    <span asp-validation-for="HoTen" class="text-danger"></span>
+                </div>
+
+                <div class="field-group">
+                    <label asp-for="Email">Email</label>
+                    <div class="field-control">
+                        <i class="bi bi-envelope"></i>
+                        <input asp-for="Email" type="email" placeholder="example@email.com" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="two-columns">
+                    <div class="field-group">
+                        <label asp-for="MatKhau">Mật khẩu</label>
+                        <div class="field-control">
+                            <i class="bi bi-lock"></i>
+                            <input asp-for="MatKhau" type="password" placeholder="Tối thiểu 6 ký tự" />
+                        </div>
+                        <span asp-validation-for="MatKhau" class="text-danger"></span>
+                    </div>
+                    <div class="field-group">
+                        <label asp-for="XacNhanMatKhau">Xác nhận mật khẩu</label>
+                        <div class="field-control">
+                            <i class="bi bi-lock-fill"></i>
+                            <input asp-for="XacNhanMatKhau" type="password" placeholder="Nhập lại mật khẩu" />
+                        </div>
+                        <span asp-validation-for="XacNhanMatKhau" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label asp-for="DienThoai">Số điện thoại</label>
+                    <div class="field-control">
+                        <i class="bi bi-telephone"></i>
+                        <input asp-for="DienThoai" placeholder="0123456789" />
+                    </div>
+                    <span asp-validation-for="DienThoai" class="text-danger"></span>
+                </div>
+
+                <div class="field-group">
+                    <label asp-for="DiaChi">Địa chỉ</label>
+                    <div class="field-control">
+                        <i class="bi bi-geo-alt"></i>
+                        <textarea asp-for="DiaChi" rows="2" placeholder="123 Đường ABC, Quận XYZ"></textarea>
+                    </div>
+                </div>
+
+                <div class="two-columns">
+                    <div class="field-group">
+                        <label asp-for="GioiTinh">Giới tính</label>
+                        <div class="field-control">
+                            <i class="bi bi-gender-ambiguous"></i>
+                            <select asp-for="GioiTinh">
+                                <option value="">-- Chọn --</option>
+                                <option value="0">Nam</option>
+                                <option value="1">Nữ</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label asp-for="NgaySinh">Ngày sinh</label>
+                        <div class="field-control">
+                            <i class="bi bi-calendar"></i>
+                            <input asp-for="NgaySinh" type="date" />
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary-full">Tạo tài khoản</button>
+            </form>
+
+            <div class="form-footer">
+                <span>Đã có tài khoản?</span>
+                <a asp-action="Login">Đăng nhập ngay</a>
             </div>
         </div>
     </div>
 </div>
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+}
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-

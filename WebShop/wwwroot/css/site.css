@@ -17,6 +17,152 @@ body {
   background-color: #f8f9fa;
 }
 
+/* Header */
+.mm-header {
+  background: linear-gradient(135deg, #ffffff 0%, #f4f6ff 60%, #eef2ff 100%);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.mm-header__inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 0;
+  flex-wrap: wrap;
+}
+
+.mm-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1 1 200px;
+}
+
+.mm-brand__logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.mm-brand__logo span {
+  font-size: 2.2rem;
+}
+
+.mm-brand__logo strong {
+  display: block;
+  font-size: 1.35rem;
+  color: #0f172a;
+}
+
+.mm-brand__logo small {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.mm-search {
+  flex: 1 1 320px;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.9);
+  gap: 10px;
+}
+
+.mm-search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+.mm-search button {
+  border: none;
+  background: #6366f1;
+  color: #fff;
+  border-radius: 999px;
+  padding: 6px 16px;
+}
+
+.mm-nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+  flex: 0 1 auto;
+}
+
+.mm-nav__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #1f2937;
+  font-weight: 600;
+  position: relative;
+  padding: 6px 12px;
+}
+
+.mm-nav__item:hover {
+  color: #2563eb;
+}
+
+.mm-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.mm-user__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(99, 102, 241, 0.1);
+  border: none;
+  color: #4c1d95;
+}
+
+.mm-user__trigger i {
+  font-size: 1.2rem;
+}
+
+.mm-nav__item .cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+}
+
+@media (max-width: 992px) {
+  .mm-header__inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mm-search {
+    display: none !important;
+  }
+
+  .mm-nav {
+    justify-content: flex-start;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .mm-actions {
+    justify-content: flex-start;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .mm-brand {
+    width: 100%;
+  }
+}
+
 /* Focus States */
 .btn:focus, 
 .btn:active:focus, 

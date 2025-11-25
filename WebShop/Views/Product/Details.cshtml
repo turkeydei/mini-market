@@ -1,0 +1,172 @@
+@model WebShop.Models.ProductDetailViewModel
+@{
+    ViewData["Title"] = Model.Product.TenHH;
+    var product = Model.Product;
+    var finalPrice = product.DonGia - product.GiamGia;
+    var discountPercent = product.DonGia > 0 ? product.GiamGia / product.DonGia * 100 : 0;
+}
+
+<div class="container my-5 product-detail-page">
+    <div class="row g-4 align-items-stretch">
+        <div class="col-lg-6">
+            <div class="detail-media">
+                @if (!string.IsNullOrEmpty(product.Hinh))
+                {
+                    <img src="/images/@product.Hinh" alt="@product.TenHH" class="img-fluid rounded-4 shadow" />
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center bg-light rounded-4 h-100 py-5 shadow">
+                        <i class="bi bi-image" style="font-size: 4rem; color: #cbd5f5;"></i>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="detail-info card border-0 shadow h-100">
+                <div class="card-body p-4">
+                    <span class="badge bg-primary mb-2">@product.Loai?.TenLoai</span>
+                    <h1 class="display-6 mb-3">@product.TenHH</h1>
+                    <p class="text-muted">@(!string.IsNullOrWhiteSpace(product.MoTa) ? product.MoTa : "Sản phẩm chất lượng từ Mini Market")</p>
+
+                    <div class="pricing-box my-4">
+                        @if (product.GiamGia > 0)
+                        {
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <strong class="h2 text-danger mb-0">@finalPrice.ToString("#,##0") đ</strong>
+                                <span class="badge bg-danger-subtle text-danger">-@discountPercent.ToString("0")%</span>
+                            </div>
+                            <small class="text-muted"><del>@product.DonGia.ToString("#,##0") đ</del></small>
+                        }
+                        else
+                        {
+                            <strong class="h2 text-primary">@product.DonGia.ToString("#,##0") đ</strong>
+                        }
+                    </div>
+
+                    <div class="detail-meta mb-4">
+                        <div><i class="bi bi-check-circle text-success"></i> Tình trạng: <strong class="@(product.SoLuongTon > 0 ? "text-success" : "text-danger")">@(product.SoLuongTon > 0 ? "Còn hàng" : "Hết hàng")</strong></div>
+                        <div><i class="bi bi-eye"></i> @product.SoLanXem lượt xem</div>
+                    </div>
+
+                    <div class="d-flex gap-3 flex-wrap">
+                        <button class="btn btn-primary btn-lg" onclick="addToCart(@product.MaHH, '@product.TenHH', @finalPrice)">
+                            <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+                        </button>
+                        <a asp-controller="Checkout" asp-action="Index" class="btn btn-outline-primary btn-lg">
+                            Mua ngay
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.RelatedProducts.Any())
+    {
+        <div class="related-products mt-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Sản phẩm tương tự</h4>
+                <a asp-controller="Home" asp-action="Index" asp-route-categoryId="@product.MaLoai">Xem tất cả</a>
+            </div>
+            <div class="row">
+                @foreach (var related in Model.RelatedProducts)
+                {
+                    var relatedPrice = related.DonGia - related.GiamGia;
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@related.MaHH" class="related-thumb">
+                                @if (!string.IsNullOrEmpty(related.Hinh))
+                                {
+                                    <img src="/images/@related.Hinh" alt="@related.TenHH" />
+                                }
+                                else
+                                {
+                                    <div class="d-flex align-items-center justify-content-center bg-light">
+                                        <i class="bi bi-image" style="font-size: 2rem; color: #cbd5f5;"></i>
+                                    </div>
+                                }
+                            </a>
+                            <div class="card-body">
+                                <p class="text-muted small mb-1">@related.Loai?.TenLoai</p>
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@related.MaHH" class="stretched-link text-decoration-none text-dark">
+                                    <h6>@related.TenHH</h6>
+                                </a>
+                                <strong class="text-primary">@relatedPrice.ToString("#,##0") đ</strong>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        if (typeof window.showToast !== 'function') {
+            let toastContainer = document.querySelector('.toast-stack');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.className = 'toast-stack';
+                document.body.appendChild(toastContainer);
+            }
+
+            window.showToast = function (message) {
+                const toast = document.createElement('div');
+                toast.className = 'mini-toast';
+                toast.innerHTML = `
+                    <div class="mini-toast__icon">✓</div>
+                    <div>
+                        <strong>Đã thêm vào giỏ hàng</strong>
+                        <p class="mb-0">${message}</p>
+                    </div>`;
+                toastContainer.appendChild(toast);
+                requestAnimationFrame(() => toast.classList.add('show'));
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            };
+        }
+
+        function addToCart(productId, productName, price) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const existing = cart.find(item => item.maHH === productId);
+            if (existing) {
+                existing.soLuong += 1;
+            } else {
+                cart.push({ maHH: productId, tenHH: productName, donGia: price, soLuong: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showToast(`"${productName}" đã được thêm.`);
+            if (typeof updateCartCount === 'function') {
+                updateCartCount();
+            }
+        }
+    </script>
+}
+
+@section Styles {
+    <style>
+        .related-thumb {
+            display: block;
+            height: 180px;
+            overflow: hidden;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .related-thumb img,
+        .related-thumb div {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-meta div {
+            margin-bottom: 8px;
+            color: #475569;
+        }
+    </style>
+}
+

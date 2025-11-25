@@ -2,37 +2,111 @@
 @{
     ViewData["Title"] = "Mini Market - Trang chủ";
     var categories = ViewBag.Categories as List<Domain.Entities.Loai>;
+    var selectedCategory = ViewBag.SelectedCategory as int?;
+    string searchKeyword = ViewBag.SearchKeyword as string ?? string.Empty;
+    int? searchCount = ViewBag.SearchResultCount as int?;
+    string selectedSort = ViewBag.SelectedSort as string ?? "popular";
 }
 
 <div class="container my-4">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h1 class="display-4 text-center mb-4">🛒 Chào mừng đến Mini Market</h1>
-            <p class="lead text-center text-muted">Mua sắm trực tuyến dễ dàng, giao hàng nhanh chóng</p>
+    <section class="hero-banner">
+        <div class="hero-text">
+            <span class="hero-pill">
+                <i class="bi bi-lightning-charge"></i> Giao hàng nhanh 2h trong nội thành
+            </span>
+            <h1>🛒 Chào mừng đến Mini Market</h1>
+            <p>Mua sắm mọi lúc mọi nơi với hàng ngàn sản phẩm chính hãng, ưu đãi hấp dẫn và giao hàng siêu tốc.</p>
+            <div class="hero-actions">
+                <a asp-action="Index" class="btn btn-primary btn-lg">
+                    <i class="bi bi-bag-heart"></i> Khám phá ngay
+                </a>
+                <a asp-controller="Order" asp-action="History" class="btn btn-outline-light btn-lg">
+                    <i class="bi bi-clock-history"></i> Theo dõi đơn hàng
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div>
+                    <strong>1200+</strong>
+                    <span>Sản phẩm nổi bật</span>
+                </div>
+                <div>
+                    <strong>4.9/5</strong>
+                    <span>Đánh giá từ khách hàng</span>
+                </div>
+                <div>
+                    <strong>24/7</strong>
+                    <span>Hỗ trợ khách hàng</span>
+                </div>
+            </div>
         </div>
-    </div>
+        <div class="hero-media">
+            <div class="hero-card">
+                <p class="text-muted small mb-1">Đơn hàng mới</p>
+                <strong>Gạo ST25 | 2 x 5kg</strong>
+                <div class="text-success mt-2">
+                    <i class="bi bi-check-circle-fill"></i> Đang được giao tới Q.1
+                </div>
+            </div>
+            <div class="hero-card">
+                <p class="text-muted small mb-1">Khuyến mãi hôm nay</p>
+                <strong class="text-danger h4 mb-0">-30%</strong>
+                <span class="text-muted">Cho đơn hàng trên 500K</span>
+            </div>
+        </div>
+    </section>
 
     <!-- Filter by Category -->
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">🏷️ Danh mục sản phẩm</h5>
-                    <div class="btn-group" role="group">
-                        <a href="@Url.Action("Index")" class="btn btn-outline-primary">Tất cả</a>
-                        @if (categories != null)
-                        {
-                            foreach (var category in categories)
-                            {
-                                <a href="@Url.Action("Index", new { categoryId = category.MaLoai })" 
-                                   class="btn btn-outline-primary">@category.TenLoai</a>
-                            }
-                        }
+                    <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+                        <div>
+                            <h5 class="card-title mb-2">🏷️ Danh mục sản phẩm</h5>
+                            <div class="btn-group flex-wrap" role="group">
+                                <a href="@Url.Action("Index", new { keyword = searchKeyword, sort = selectedSort })" class="btn btn-outline-primary @(selectedCategory == null ? "active" : "")">Tất cả</a>
+                                @if (categories != null)
+                                {
+                                    foreach (var category in categories)
+                                    {
+                                        var isActive = selectedCategory == category.MaLoai;
+                                        <a href="@Url.Action("Index", new { categoryId = category.MaLoai, keyword = searchKeyword, sort = selectedSort })" 
+                                           class="btn btn-outline-primary @(isActive ? "active" : "")">@category.TenLoai</a>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="sorting-select">
+                            <label for="sortSelect" class="form-label mb-1">Sắp xếp</label>
+                            <select id="sortSelect" class="form-select" onchange="onSortChanged(this.value)">
+                                <option value="popular" selected="@(selectedSort == "popular" ? "selected" : null)">Phổ biến nhất</option>
+                                <option value="new" selected="@(selectedSort == "new" ? "selected" : null)">Mới nhất</option>
+                                <option value="price_asc" selected="@(selectedSort == "price_asc" ? "selected" : null)">Giá tăng dần</option>
+                                <option value="price_desc" selected="@(selectedSort == "price_desc" ? "selected" : null)">Giá giảm dần</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    @if (!string.IsNullOrWhiteSpace(searchKeyword))
+    {
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="alert alert-info d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div>
+                        <strong>Kết quả cho từ khóa: </strong><span class="text-primary">"@searchKeyword"</span>
+                        <span class="badge bg-primary ms-2">@searchCount ?? 0 sản phẩm</span>
+                    </div>
+                    <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Index", new { categoryId = selectedCategory })">
+                        Xóa tìm kiếm
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
 
     <!-- Products Grid -->
     <div class="row">
@@ -45,7 +119,7 @@
                 
                 <div class="col-md-3 mb-4">
                     <div class="card h-100 shadow-sm product-card">
-                        <div class="card-img-top position-relative" style="height: 195px; overflow: hidden;">
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.MaHH" class="product-thumb">
                             @if (!string.IsNullOrEmpty(product.Hinh))
                             {
                                 <img src="/images/@product.Hinh"
@@ -62,13 +136,15 @@
                                     </div>
                                 </div>
                             }
-                        </div>
+                        </a>
 
                         
                         <div class="card-body">
                             <span class="badge bg-secondary mb-2">@product.Loai?.TenLoai</span>
                             
-                            <h5 class="card-title" style="height: 50px; overflow: hidden;">@product.TenHH</h5>
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@product.MaHH" class="text-decoration-none text-dark">
+                                <h5 class="card-title" style="height: 50px; overflow: hidden;">@product.TenHH</h5>
+                            </a>
                             
                             <p class="card-text text-muted small" style="height: 40px; overflow: hidden;">
                                 @(string.IsNullOrEmpty(product.MoTa) ? "Sản phẩm chất lượng cao" : product.MoTa)
@@ -100,9 +176,14 @@
                         </div>
                         
                         <div class="card-footer bg-white border-0">
-                            <button class="btn btn-primary w-100" onclick="addToCart(@product.MaHH, '@product.TenHH', @finalPrice)">
-                                <i class="bi bi-cart-plus"></i> Thêm vào giỏ
-                            </button>
+                            <div class="d-grid gap-2">
+                                <a class="btn btn-outline-primary" asp-controller="Product" asp-action="Details" asp-route-id="@product.MaHH">
+                                    Xem chi tiết
+                                </a>
+                                <button class="btn btn-primary" onclick="addToCart(@product.MaHH, '@product.TenHH', @finalPrice)">
+                                    <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -112,8 +193,16 @@
         {
             <div class="col-md-12 text-center py-5">
                 <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
-                <h3 class="mt-3 text-muted">Chưa có sản phẩm</h3>
-                <p class="text-muted">Hãy quay lại sau hoặc chọn danh mục khác</p>
+                @if (!string.IsNullOrWhiteSpace(searchKeyword))
+                {
+                    <h3 class="mt-3 text-muted">Không tìm thấy sản phẩm phù hợp</h3>
+                    <p class="text-muted">Hãy thử từ khóa khác hoặc xóa bộ lọc.</p>
+                }
+                else
+                {
+                    <h3 class="mt-3 text-muted">Chưa có sản phẩm</h3>
+                    <p class="text-muted">Hãy quay lại sau hoặc chọn danh mục khác</p>
+                }
             </div>
         }
     </div>
@@ -121,6 +210,35 @@
 
 @section Scripts {
     <script>
+        let toastContainer = document.querySelector('.toast-stack');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.className = 'toast-stack';
+            document.body.appendChild(toastContainer);
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'mini-toast';
+            toast.innerHTML = `
+                <div class="mini-toast__icon">✓</div>
+                <div>
+                    <strong>Đã thêm vào giỏ hàng</strong>
+                    <p class="mb-0">${message}</p>
+                </div>`;
+
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                requestAnimationFrame(() => toast.classList.add('show'));
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         // Shopping cart logic
         function addToCart(productId, productName, price) {
             let cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -142,7 +260,7 @@
             localStorage.setItem('cart', JSON.stringify(cart));
             
             // Show notification
-            alert(`✓ Đã thêm "${productName}" vào giỏ hàng!`);
+            showToast(`"${productName}" đã được thêm.`);
             
             // Update cart count in navbar (if you have one)
             updateCartCount();
@@ -161,6 +279,27 @@
         
         // Update cart count on page load
         document.addEventListener('DOMContentLoaded', updateCartCount);
+
+        function onSortChanged(sortValue) {
+            const params = new URLSearchParams(window.location.search);
+            if (sortValue) {
+                params.set('sort', sortValue);
+            } else {
+                params.delete('sort');
+            }
+
+            const keyword = '@searchKeyword';
+            if (keyword) {
+                params.set('keyword', keyword);
+            }
+
+            const category = '@selectedCategory';
+            if (category && category !== '') {
+                params.set('categoryId', category);
+            }
+
+            window.location.href = '@Url.Action("Index")' + (params.toString() ? '?' + params.toString() : '');
+        }
     </script>
 }
 
@@ -172,5 +311,178 @@
     .product-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    }
+
+    .product-thumb {
+        display: block;
+        height: 195px;
+        overflow: hidden;
+        border-radius: 1rem 1rem 0 0;
+    }
+
+    .product-thumb img,
+    .product-thumb div {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-thumb img {
+        transform: scale(1.05);
+    }
+
+    .sorting-select {
+        min-width: 220px;
+    }
+
+    .hero-banner {
+        background: linear-gradient(135deg, #eef2ff, #dbeafe);
+        border-radius: 32px;
+        padding: 40px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 30px;
+        margin-bottom: 30px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .hero-banner::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.7), transparent 55%);
+        pointer-events: none;
+    }
+
+    .hero-text {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(99, 102, 241, 0.1);
+        color: #4c1d95;
+        font-weight: 600;
+    }
+
+    .hero-text h1 {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin: 18px 0 10px;
+        color: #111827;
+    }
+
+    .hero-text p {
+        font-size: 1.1rem;
+        color: #4b5563;
+        max-width: 560px;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin: 24px 0;
+    }
+
+    .hero-stats {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        color: #475569;
+    }
+
+    .hero-stats strong {
+        font-size: 1.5rem;
+        color: #111827;
+        display: block;
+    }
+
+    .hero-media {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+    }
+
+    @@media (max-width: 576px) {
+        .hero-banner {
+            padding: 28px;
+        }
+
+        .toast-stack {
+            left: 10px;
+            right: 10px;
+            top: auto;
+            bottom: 20px;
+        }
+    }
+
+    .toast-stack {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 1050;
+    }
+
+    .mini-toast {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 18px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+        border-left: 4px solid #10b981;
+        transform: translateX(120%);
+        opacity: 0;
+        transition: all 0.3s ease;
+        max-width: 320px;
+    }
+
+    .mini-toast.show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .mini-toast__icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #10b981;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .mini-toast strong {
+        display: block;
+        margin-bottom: 2px;
+        color: #0f172a;
+    }
+
+    .mini-toast p {
+        font-size: 0.9rem;
+        color: #475569;
     }
 </style>

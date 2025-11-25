@@ -1,0 +1,245 @@
+html,
+body {
+    height: 100%;
+}
+
+.auth-page {
+    min-height: calc(100vh - 120px);
+    padding: 40px 20px;
+    background: radial-gradient(circle at top, #f8fbff, #f1f5ff 30%, #e7ecfb 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 1000px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 32px;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.15);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    overflow: hidden;
+}
+
+.auth-info {
+    background: linear-gradient(135deg, #313866, #50409a);
+    color: #fff;
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: relative;
+}
+
+.auth-info h2 {
+    font-size: 2.2rem;
+    font-weight: 600;
+}
+
+.auth-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.auth-info ul li {
+    padding-left: 28px;
+    position: relative;
+    font-weight: 500;
+}
+
+.auth-info ul li::before {
+    content: "•";
+    position: absolute;
+    left: 10px;
+    color: #ffb703;
+}
+
+.demo-box {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    backdrop-filter: blur(4px);
+}
+
+.demo-box .text-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
+.demo-box div strong {
+    display: block;
+    font-size: 0.95rem;
+}
+
+.demo-box div span {
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+.auth-form {
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.auth-form__header h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #101828;
+}
+
+.auth-form__header p {
+    color: #5f6b80;
+    margin-bottom: 0;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field-group label {
+    font-weight: 600;
+    color: #1f2933;
+}
+
+.field-control {
+    display: flex;
+    align-items: center;
+    border: 1px solid #d8dee9;
+    border-radius: 14px;
+    padding: 12px 14px;
+    gap: 10px;
+    transition: border 0.2s, box-shadow 0.2s;
+    background: #fdfefe;
+}
+
+.field-control:focus-within {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+.field-control i {
+    color: #94a3b8;
+}
+
+.field-control input,
+.field-control textarea,
+.field-control select {
+    border: none;
+    outline: none;
+    width: 100%;
+    background: transparent;
+    font-size: 1rem;
+    color: #111827;
+}
+
+.field-inline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+.field-inline a {
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.remember-me {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.remember-me input {
+    accent-color: #6366f1;
+}
+
+.btn-primary-full {
+    width: 100%;
+    border: none;
+    border-radius: 16px;
+    padding: 14px;
+    background: linear-gradient(135deg, #7c3aed, #6366f1);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary-full:hover {
+    box-shadow: 0 15px 30px rgba(99, 102, 241, 0.35);
+}
+
+.btn-primary-full:active {
+    transform: translateY(1px);
+}
+
+.form-footer {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #616b7c;
+}
+
+.form-footer a {
+    color: #7c3aed;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.soft-card {
+    border: none;
+    border-radius: 16px;
+    background: #fdf2f8;
+    color: #be185d;
+}
+
+.soft-card .bi {
+    margin-right: 6px;
+}
+
+.register-page .auth-info {
+    background: linear-gradient(135deg, #0f9aa8, #2f4858);
+}
+
+.two-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+@media (max-width: 768px) {
+    .auth-card {
+        border-radius: 24px;
+    }
+
+    .auth-info,
+    .auth-form {
+        padding: 32px;
+    }
+
+    .field-inline {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
