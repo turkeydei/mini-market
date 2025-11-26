@@ -46,16 +46,38 @@
 
                     <div class="detail-meta mb-4">
                         <div><i class="bi bi-check-circle text-success"></i> Tình trạng: <strong class="@(product.SoLuongTon > 0 ? "text-success" : "text-danger")">@(product.SoLuongTon > 0 ? "Còn hàng" : "Hết hàng")</strong></div>
-                        <div><i class="bi bi-eye"></i> @product.SoLanXem lượt xem</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Số lượng:</label>
+                        <div class="quantity-selector">
+                            <button type="button" class="qty-btn" onclick="changeQuantity(-1)">
+                                <i class="bi bi-dash"></i>
+                            </button>
+                            <input type="number" id="quantity" class="qty-input" value="1" min="1" max="@product.SoLuongTon" readonly />
+                            <button type="button" class="qty-btn" onclick="changeQuantity(1)">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted">Còn @product.SoLuongTon sản phẩm có sẵn</small>
                     </div>
 
                     <div class="d-flex gap-3 flex-wrap">
-                        <button class="btn btn-primary btn-lg" onclick="addToCart(@product.MaHH, '@product.TenHH', @finalPrice)">
-                            <i class="bi bi-cart-plus"></i> Thêm vào giỏ
-                        </button>
-                        <a asp-controller="Checkout" asp-action="Index" class="btn btn-outline-primary btn-lg">
-                            Mua ngay
-                        </a>
+                        @if (product.SoLuongTon > 0)
+                        {
+                            <button class="btn btn-primary btn-lg" onclick="addToCart(@product.MaHH, '@product.TenHH', @finalPrice)">
+                                <i class="bi bi-cart-plus"></i> Thêm vào giỏ
+                            </button>
+                            <a asp-controller="Checkout" asp-action="Index" class="btn btn-outline-primary btn-lg">
+                                Mua ngay
+                            </a>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary btn-lg" disabled>
+                                <i class="bi bi-cart-plus"></i> Hết hàng
+                            </button>
+                        }
                     </div>
                 </div>
             </div>
@@ -130,19 +152,34 @@
             };
         }
 
+        function changeQuantity(delta) {
+            const input = document.getElementById('quantity');
+            const current = parseInt(input.value);
+            const min = parseInt(input.min);
+            const max = parseInt(input.max);
+            const newValue = current + delta;
+            
+            if (newValue >= min && newValue <= max) {
+                input.value = newValue;
+            }
+        }
+
         function addToCart(productId, productName, price) {
+            const quantity = parseInt(document.getElementById('quantity').value);
             let cart = JSON.parse(localStorage.getItem('cart') || '[]');
             const existing = cart.find(item => item.maHH === productId);
             if (existing) {
-                existing.soLuong += 1;
+                existing.soLuong += quantity;
             } else {
-                cart.push({ maHH: productId, tenHH: productName, donGia: price, soLuong: 1 });
+                cart.push({ maHH: productId, tenHH: productName, donGia: price, soLuong: quantity });
             }
             localStorage.setItem('cart', JSON.stringify(cart));
-            showToast(`"${productName}" đã được thêm.`);
+            showToast(`${quantity} x "${productName}" đã được thêm.`);
             if (typeof updateCartCount === 'function') {
                 updateCartCount();
             }
+            // Reset về 1 sau khi thêm
+            document.getElementById('quantity').value = 1;
         }
     </script>
 }
@@ -166,6 +203,64 @@
         .detail-meta div {
             margin-bottom: 8px;
             color: #475569;
+        }
+
+        .quantity-selector {
+            display: inline-flex;
+            align-items: center;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .qty-btn {
+            background: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #0d6efd;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .qty-btn:hover {
+            background: #f8f9fa;
+            color: #0a58ca;
+        }
+
+        .qty-btn:active {
+            transform: scale(0.95);
+        }
+
+        .qty-input {
+            border: none;
+            width: 70px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            background: #f8f9fa;
+        }
+
+        .qty-input:focus {
+            outline: none;
+        }
+
+        /* Remove spinner arrows */
+        .qty-input::-webkit-outer-spin-button,
+        .qty-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .qty-input[type=number] {
+            -moz-appearance: textfield;
         }
     </style>
 }
