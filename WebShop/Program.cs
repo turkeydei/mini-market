@@ -35,7 +35,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     });
 
-// [ATLAS] 1. Cấu hình Redis Cache
+// 1. Cấu hình Redis Cache
 // Code này sẽ tự động đọc Connection String từ biến môi trường
 builder.Services.AddStackExchangeRedisCache(options =>
 {
@@ -43,7 +43,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "WebShop_"; // Tiền tố để dễ nhận biết key trong Redis
 });
 
-// [ATLAS] 2. Đăng ký dịch vụ Session (Dùng Redis ở trên để lưu)
+// 2. Đăng ký dịch vụ Session (Dùng Redis ở trên để lưu)
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(60); // Thời gian giữ đăng nhập
