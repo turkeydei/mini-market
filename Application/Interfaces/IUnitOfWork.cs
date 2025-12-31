@@ -11,6 +11,7 @@ public interface IUnitOfWork : IDisposable
     IRepository<HoaDon> HoaDons { get; }
     IRepository<ChiTietHD> ChiTietHDs { get; }
     IRepository<PaymentTransaction> PaymentTransactions { get; }
+    IRepository<ProductReview> ProductReviews { get; }
     
     // Save changes
     Task<int> SaveAsync();

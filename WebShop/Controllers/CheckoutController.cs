@@ -53,7 +53,7 @@ public class CheckoutController : Controller
             _context.HoaDons.Add(hoaDon);
             await _context.SaveChangesAsync();
 
-            // 2. Tạo chi tiết đơn hàng (ChiTietHD)
+            // 2. Tạo chi tiết đơn hàng (ChiTietHD) 
             decimal tongTien = 0;
             foreach (var item in request.Items)
             {
@@ -91,7 +91,7 @@ public class CheckoutController : Controller
 
             // 3. Tạo bản ghi PaymentTransaction (status = Pending)
             var paymentTransaction = new PaymentTransaction
-            {
+            { 
                 MaHD = hoaDon.MaHD,
                 SoTien = hoaDon.TongTien,
                 Status = "Pending",
@@ -207,12 +207,12 @@ public class CheckoutController : Controller
             success = true,
             data = new
             {
-                maHD = hoaDon.MaHD,
-                ngayDat = hoaDon.NgayDat,
-                diaChiGiao = hoaDon.DiaChiGiao,
-                soDienThoai = hoaDon.SoDienThoai,
-                tongTien = hoaDon.TongTien,
-                phiVanChuyen = hoaDon.PhiVanChuyen,
+                maHD        = hoaDon.MaHD,
+                ngayDat  = hoaDon.NgayDat,
+                diaChiGiao  = hoaDon.DiaChiGiao,
+                soDienThoai     = hoaDon.SoDienThoai,
+                tongTien    = hoaDon.TongTien,
+                phiVanChuyen    = hoaDon.PhiVanChuyen,
                 status = hoaDon.Status,
                 ghiChu = hoaDon.GhiChu,
                 khachHang = new

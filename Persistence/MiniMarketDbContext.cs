@@ -19,6 +19,7 @@ public class MiniMarketDbContext : DbContext
     
     // DTO phụ trợ
     public DbSet<ChiTietHD> ChiTietHDs { get; set; } = null!;
+    public DbSet<ProductReview> ProductReviews { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -63,5 +64,21 @@ public class MiniMarketDbContext : DbContext
             .WithOne(hd => hd.PaymentTransaction)
             .HasForeignKey<PaymentTransaction>(pt => pt.MaHD)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Relationship: HangHoa -> ProductReview (One-to-Many)
+        modelBuilder
+            .Entity<ProductReview>()
+            .HasOne(pr => pr.HangHoa)
+            .WithMany()
+            .HasForeignKey(pr => pr.MaHH)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Relationship: User -> ProductReview (One-to-Many)
+        modelBuilder
+            .Entity<ProductReview>()
+            .HasOne(pr => pr.User)
+            .WithMany()
+            .HasForeignKey(pr => pr.MaUser)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

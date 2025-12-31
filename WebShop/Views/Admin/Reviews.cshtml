@@ -1,0 +1,167 @@
+@model IEnumerable<Domain.Entities.ProductReview>
+@{
+    ViewData["Title"] = "Quản Lý Đánh Giá";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var status = ViewBag.Status as string;
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-star me-2"></i>Danh Sách Đánh Giá</h5>
+        <div>
+            <a href="@Url.Action("Reviews", "Admin")" class="btn btn-sm @(string.IsNullOrEmpty(status) ? "btn-primary" : "btn-outline-primary")">
+                Tất Cả
+            </a>
+            <a href="@Url.Action("Reviews", "Admin", new { status = "Pending" })" class="btn btn-sm @(status == "Pending" ? "btn-warning" : "btn-outline-warning")">
+                Chờ Duyệt
+            </a>
+            <a href="@Url.Action("Reviews", "Admin", new { status = "Approved" })" class="btn btn-sm @(status == "Approved" ? "btn-success" : "btn-outline-success")">
+                Đã Duyệt
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover" id="reviewsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Sản Phẩm</th>
+                        <th>Người Đánh Giá</th>
+                        <th>Đánh Giá</th>
+                        <th>Nhận Xét</th>
+                        <th>Ngày Tạo</th>
+                        <th>Trạng Thái</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var review in Model)
+                    {
+                        <tr>
+                            <td>@review.MaReview</td>
+                            <td>
+                                @if (review.HangHoa != null)
+                                {
+                                    <a href="@Url.Action("Details", "Product", new { id = review.MaHH })" target="_blank">
+                                        @review.HangHoa.TenHH
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">N/A</span>
+                                }
+                            </td>
+                            <td>@review.User?.HoTen</td>
+                            <td>
+                                <div class="stars">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="bi bi-star-fill @(i <= review.Rating ? "text-warning" : "text-secondary")"></i>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(review.Comment))
+                                {
+                                    <span title="@review.Comment">
+                                        @(review.Comment.Length > 50 ? review.Comment.Substring(0, 50) + "..." : review.Comment)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Không có nhận xét</span>
+                                }
+                            </td>
+                            <td>@review.NgayTao.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @if (review.IsApproved)
+                                {
+                                    <span class="badge bg-success">Đã Duyệt</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">Chờ Duyệt</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!review.IsApproved)
+                                {
+                                    <form method="post" action="@Url.Action("ApproveReview", "Admin", new { id = review.MaReview })" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-success" 
+                                                onclick="return confirm('Phê duyệt đánh giá này?')">
+                                            <i class="bi bi-check-circle"></i> Duyệt
+                                        </button>
+                                    </form>
+                                }
+                                <form method="post" action="@Url.Action("RejectReview", "Admin", new { id = review.MaReview })" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger" 
+                                            onclick="return confirm('Từ chối đánh giá này?')">
+                                        <i class="bi bi-x-circle"></i> Từ Chối
+                                    </button>
+                                </form>
+                                <button type="button" class="btn btn-sm btn-info" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#responseModal@review.MaReview">
+                                    <i class="bi bi-reply"></i> Phản Hồi
+                                </button>
+                            </td>
+                        </tr>
+                        
+                        <!-- Response Modal -->
+                        <div class="modal fade" id="responseModal@review.MaReview" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Phản Hồi Đánh Giá</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form method="post" action="@Url.Action("AddReviewResponse", "Admin", new { id = review.MaReview })">
+                                        @Html.AntiForgeryToken()
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">Đánh Giá:</label>
+                                                <div class="stars mb-2">
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        <i class="bi bi-star-fill @(i <= review.Rating ? "text-warning" : "text-secondary")"></i>
+                                                    }
+                                                </div>
+                                                <p class="text-muted">@review.Comment</p>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="response@review.MaReview" class="form-label">Phản Hồi:</label>
+                                                <textarea name="response" id="response@review.MaReview" class="form-control" rows="3" 
+                                                          placeholder="Nhập phản hồi của bạn...">@review.AdminResponse</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                            <button type="submit" class="btn btn-primary">Lưu Phản Hồi</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#reviewsTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/vi.json'
+                },
+                order: [[5, 'desc']]
+            });
+        });
+    </script>
+}
+

@@ -1,0 +1,17 @@
+digraph ERD {
+  graph [splines=true, rankdir=LR, bgcolor=white];
+  node [shape=record, fontname="Helvetica", fontsize=11];
+
+  Loai [label="{Loai|MaLoai (PK)\lTenLoai\lMoTa\l}"];
+  HangHoa [label="{HangHoa|MaHH (PK)\lMaLoai (FK)\lTenHH\lDonGia\lHinh\lSoLuongTon\lGiamGia\lSoLanXem\lMoTa\l}"];
+  User [label="{User|MaUser (PK)\lHoTen\lEmail\lMatKhau\lDienThoai\lVaiTro\lGioiTinh\lNgaySinh\lDiaChi\l}"];
+  HoaDon [label="{HoaDon|MaHD (PK)\lMaUser (FK)\lNgayDat\lNgayGiao\lDiaChiGiao\lTongTien\lPhiVanChuyen\lStatus\lGhiChu\lSoDienThoai\l}"];
+  ChiTietHD [label="{ChiTietHD|MaCT (PK)\lMaHD (FK)\lMaHH (FK)\lDonGia\lSoLuong\lGiamGia\l}"];
+  PaymentTransaction [label="{PaymentTransaction|MaGD (PK)\lMaHD (FK)\lStatus\lSoTien\lPhuongThucTT\lNgayTao\lNgayCapNhat\lGhiChu\l}"];
+
+  Loai -> HangHoa [label="1..*", fontcolor="#555555"];
+  User -> HoaDon [label="1..*", fontcolor="#555555"];
+  HangHoa -> ChiTietHD [label="1..*", fontcolor="#555555"];
+  HoaDon -> ChiTietHD [label="1..*", fontcolor="#555555"];
+  HoaDon -> PaymentTransaction [label="1..1", fontcolor="#555555"];
+}

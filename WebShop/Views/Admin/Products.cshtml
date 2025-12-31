@@ -1,0 +1,122 @@
+@model IEnumerable<Domain.Entities.HangHoa>
+@{
+    ViewData["Title"] = "Quản Lý Sản Phẩm";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var categories = ViewBag.Categories as IEnumerable<Domain.Entities.Loai>;
+    var search = ViewBag.Search as string;
+    var categoryId = ViewBag.CategoryId as int?;
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-box-seam me-2"></i>Danh Sách Sản Phẩm</h5>
+        <a href="@Url.Action("CreateProduct", "Admin")" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Thêm Sản Phẩm
+        </a>
+    </div>
+    <div class="card-body">
+        <!-- Search and Filter -->
+        <form method="get" action="@Url.Action("Products", "Admin")" class="mb-4">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm sản phẩm..." value="@search" />
+                </div>
+                <div class="col-md-4">
+                    <select name="categoryId" class="form-select">
+                        <option value="">Tất cả danh mục</option>
+                        @if (categories != null)
+                        {
+                            @foreach (var cat in categories)
+                            {
+                                <option value="@cat.MaLoai" selected="@(categoryId == cat.MaLoai)">@cat.TenLoai</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search me-2"></i>Tìm Kiếm
+                    </button>
+                    <a href="@Url.Action("Products", "Admin")" class="btn btn-secondary">
+                        <i class="bi bi-arrow-clockwise me-2"></i>Reset
+                    </a>
+                </div>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover" id="productsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Hình Ảnh</th>
+                        <th>Tên Sản Phẩm</th>
+                        <th>Danh Mục</th>
+                        <th>Giá</th>
+                        <th>Tồn Kho</th>
+                        <th>Giảm Giá</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model)
+                    {
+                        <tr>
+                            <td>@product.MaHH</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(product.Hinh))
+                                {
+                                    <img src="@product.Hinh" alt="@product.TenHH" style="width: 50px; height: 50px; object-fit: cover;" class="rounded" />
+                                }
+                                else
+                                {
+                                    <i class="bi bi-image fs-4 text-muted"></i>
+                                }
+                            </td>
+                            <td><strong>@product.TenHH</strong></td>
+                            <td>
+                                @if (product.Loai != null)
+                                {
+                                    <span class="badge bg-info">@product.Loai.TenLoai</span>
+                                }
+                            </td>
+                            <td>@string.Format("{0:N0}", product.DonGia) đ</td>
+                            <td>
+                                <span class="badge bg-@(product.SoLuongTon < 10 ? "danger" : product.SoLuongTon < 50 ? "warning" : "success")">
+                                    @product.SoLuongTon
+                                </span>
+                            </td>
+                            <td>@string.Format("{0:N0}", product.GiamGia) đ</td>
+                            <td>
+                                <a href="@Url.Action("EditProduct", "Admin", new { id = product.MaHH })" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil"></i> Sửa
+                                </a>
+                                <form method="post" action="@Url.Action("DeleteProduct", "Admin", new { id = product.MaHH })" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-danger" 
+                                            onclick="return confirm('Bạn có chắc muốn xóa sản phẩm @product.TenHH?')">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#productsTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/vi.json'
+                },
+                order: [[0, 'desc']]
+            });
+        });
+    </script>
+}
+

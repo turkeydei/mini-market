@@ -1,9 +1,8 @@
-version: '3.8'
-
 services:
   # SQL Server Database
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
     container_name: minimarket-sqlserver
     environment:
       - ACCEPT_EULA=Y
@@ -29,8 +28,8 @@ services:
       dockerfile: Dockerfile
     container_name: minimarket-webshop
     ports:
-      - "5000:8080"
-      - "5001:8081"
+      - "5050:8080"
+      - "5051:8081"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080

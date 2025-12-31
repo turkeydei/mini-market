@@ -15,6 +15,7 @@ public class UnitOfWork : IUnitOfWork
     private IRepository<HoaDon>? _hoaDons;
     private IRepository<ChiTietHD>? _chiTietHDs;
     private IRepository<PaymentTransaction>? _paymentTransactions;
+    private IRepository<ProductReview>? _productReviews;
 
     public UnitOfWork(MiniMarketDbContext context)
     {
@@ -38,6 +39,9 @@ public class UnitOfWork : IUnitOfWork
     
     public IRepository<PaymentTransaction> PaymentTransactions => 
         _paymentTransactions ??= new Repository<PaymentTransaction>(_context);
+    
+    public IRepository<ProductReview> ProductReviews => 
+        _productReviews ??= new Repository<ProductReview>(_context);
 
     public async Task<int> SaveAsync()
     {

@@ -1,0 +1,198 @@
+@model Domain.Entities.HoaDon
+@{
+    ViewData["Title"] = "Chi Tiết Đơn Hàng #" + Model.MaHD;
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Thông Tin Đơn Hàng</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Mã Đơn Hàng:</strong> #@Model.MaHD
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Ngày Đặt:</strong> @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Trạng Thái:</strong>
+                        <span class="badge bg-@(Model.Status == "Completed" ? "success" : Model.Status == "Pending" ? "warning" : Model.Status == "Processing" ? "info" : "danger")">
+                            @Model.Status
+                        </span>
+                    </div>
+                    @if (Model.NgayGiao.HasValue)
+                    {
+                        <div class="col-md-6">
+                            <strong>Ngày Giao:</strong> @Model.NgayGiao.Value.ToString("dd/MM/yyyy HH:mm")
+                        </div>
+                    }
+                </div>
+                <div class="mb-3">
+                    <strong>Địa Chỉ Giao Hàng:</strong> @Model.DiaChiGiao
+                </div>
+                <div class="mb-3">
+                    <strong>Số Điện Thoại:</strong> @Model.SoDienThoai
+                </div>
+                @if (!string.IsNullOrEmpty(Model.GhiChu))
+                {
+                    <div class="mb-3">
+                        <strong>Ghi Chú:</strong> @Model.GhiChu
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Chi Tiết Sản Phẩm</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.ChiTietHDs != null && Model.ChiTietHDs.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Sản Phẩm</th>
+                                    <th>Đơn Giá</th>
+                                    <th>Số Lượng</th>
+                                    <th>Giảm Giá</th>
+                                    <th>Thành Tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var detail in Model.ChiTietHDs)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (detail.HangHoa != null)
+                                            {
+                                                <div class="d-flex align-items-center">
+                                                    @if (!string.IsNullOrEmpty(detail.HangHoa.Hinh))
+                                                    {
+                                                        <img src="@detail.HangHoa.Hinh" alt="@detail.HangHoa.TenHH" style="width: 50px; height: 50px; object-fit: cover;" class="me-2 rounded" />
+                                                    }
+                                                    <div>
+                                                        <strong>@detail.HangHoa.TenHH</strong>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td>@string.Format("{0:N0}", detail.DonGia) đ</td>
+                                        <td>@detail.SoLuong</td>
+                                        <td>@string.Format("{0:N0}", detail.GiamGia) đ</td>
+                                        <td><strong>@string.Format("{0:N0}", detail.ThanhTien) đ</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4" class="text-end">Phí Vận Chuyển:</th>
+                                    <th>@string.Format("{0:N0}", Model.PhiVanChuyen) đ</th>
+                                </tr>
+                                <tr>
+                                    <th colspan="4" class="text-end">Tổng Tiền:</th>
+                                    <th class="text-danger">@string.Format("{0:N0}", Model.TongTien) đ</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-person me-2"></i>Thông Tin Khách Hàng</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.User != null)
+                {
+                    <p><strong>Họ Tên:</strong> @Model.User.HoTen</p>
+                    <p><strong>Email:</strong> @Model.User.Email</p>
+                    <p><strong>Điện Thoại:</strong> @Model.User.DienThoai</p>
+                    <p><strong>Địa Chỉ:</strong> @Model.User.DiaChi</p>
+                }
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-credit-card me-2"></i>Thanh Toán</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.PaymentTransaction != null)
+                {
+                    <p><strong>Mã Giao Dịch:</strong> #@Model.PaymentTransaction.MaGD</p>
+                    <p><strong>Số Tiền:</strong> @string.Format("{0:N0}", Model.PaymentTransaction.SoTien) đ</p>
+                    <p><strong>Phương Thức:</strong> @(Model.PaymentTransaction.PhuongThucTT ?? "N/A")</p>
+                    <p><strong>Trạng Thái:</strong> 
+                        <span class="badge bg-@(Model.PaymentTransaction.Status == "Completed" || Model.PaymentTransaction.Status == "Success" ? "success" : Model.PaymentTransaction.Status == "Pending" ? "warning" : "danger")">
+                            @Model.PaymentTransaction.Status
+                        </span>
+                    </p>
+                    <p><strong>Ngày Tạo:</strong> @Model.PaymentTransaction.NgayTao.ToString("dd/MM/yyyy HH:mm")</p>
+                }
+                else
+                {
+                    <p class="text-muted">Chưa có thông tin thanh toán</p>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Thao Tác</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Status != "Completed" && Model.Status != "Cancelled")
+                {
+                    <form method="post" action="@Url.Action("UpdateOrderStatus", "Admin", new { id = Model.MaHD })" class="mb-3">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label class="form-label">Cập Nhật Trạng Thái</label>
+                            <select name="status" class="form-select">
+                                <option value="Pending" selected="@(Model.Status == "Pending")">Pending</option>
+                                <option value="Processing" selected="@(Model.Status == "Processing")">Processing</option>
+                                <option value="Completed" selected="@(Model.Status == "Completed")">Completed</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle me-2"></i>Cập Nhật
+                        </button>
+                    </form>
+
+                    @if (Model.Status != "Cancelled")
+                    {
+                        <form method="post" action="@Url.Action("CancelOrder", "Admin", new { id = Model.MaHD })">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger w-100" 
+                                    onclick="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
+                                <i class="bi bi-x-circle me-2"></i>Hủy Đơn Hàng
+                            </button>
+                        </form>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">Đơn hàng đã @(Model.Status == "Completed" ? "hoàn thành" : "bị hủy")</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="@Url.Action("Orders", "Admin")" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Quay Lại
+    </a>
+</div>
+

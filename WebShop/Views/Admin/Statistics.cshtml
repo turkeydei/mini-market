@@ -1,0 +1,159 @@
+@{
+    ViewData["Title"] = "Thống Kê";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2">Doanh Thu Hôm Nay</h6>
+                <h2 class="mb-0">@string.Format("{0:N0}", Model.RevenueToday) đ</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2">Doanh Thu Tháng Này</h6>
+                <h2 class="mb-0">@string.Format("{0:N0}", Model.RevenueThisMonth) đ</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2">Doanh Thu Năm Nay</h6>
+                <h2 class="mb-0">@string.Format("{0:N0}", Model.RevenueThisYear) đ</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2">Đơn Hàng Hôm Nay</h6>
+                <h2 class="mb-0">@Model.OrdersToday</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2">Đơn Hàng Tháng Này</h6>
+                <h2 class="mb-0">@Model.OrdersThisMonth</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-secondary">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2">Đơn Hàng Năm Nay</h6>
+                <h2 class="mb-0">@Model.OrdersThisYear</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Doanh Thu Theo Tháng</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-trophy me-2"></i>Sản Phẩm Bán Chạy</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.TopProducts != null && Model.TopProducts.Count > 0)
+                {
+                    <div class="list-group">
+                        @foreach (var item in Model.TopProducts)
+                        {
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">@item.Product.TenHH</h6>
+                                        <small class="text-muted">Đã bán: @item.TotalSold</small>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">@string.Format("{0:N0}", item.TotalRevenue) đ</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">Chưa có dữ liệu</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Doanh thu theo tháng
+            var monthlyRevenue = @Html.Raw(Json.Serialize(Model.MonthlyRevenue));
+            
+            var months = [];
+            var revenues = [];
+            
+            monthlyRevenue.forEach(function(item) {
+                months.push('Tháng ' + item.month);
+                revenues.push(item.revenue);
+            });
+
+            var ctx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Doanh Thu (VNĐ)',
+                        data: revenues,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Doanh Thu: ' + new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' đ';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
+
